@@ -1,0 +1,115 @@
+<html lang="en">
+<head>
+    <title>noise.dog</title>
+</head>
+<body>
+<main>
+    <header>noise.dog</header>
+    <section class="options">
+        <button onclick="setType('brown')">brown</button>
+        <button onclick="setType('white')">white</button>
+        <input type="range" id="volume" min="0" max="100" value="50" oninput="setVolume(this.value)">
+    </section>
+    <section>
+        <button onclick="togglePlay()">play</button>
+    </section>
+    <section class="info">
+        <div class="hint"><kbd>space</kbd> play / pause</div>
+    </section>
+</main>
+<script>
+    let ctx;
+    let isPlaying = false;
+    let noiseType = 'brown';
+    let noiseNode;
+    let gainNode;
+
+    function createAudioContext() {
+        ctx = new (window.AudioContext || window.webKitAudioContext)();
+        gainNode = ctx.createGain();
+        gainNode.gain.value = 0.5;
+        gainNode.connect(ctx.destination);
+    }
+
+    function whiteNoise() {
+        const bufferSize = 2 * ctx.sampleRate;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+        return source;
+    }
+
+    function brownNoise() {
+        const bufferSize = 2 * ctx.sampleRate;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let last = 0;
+        for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            data[i] = (last + 0.02 * white) / 1.02;
+            last = data[i];
+            data[i] *= 3.5; // boost volume to compensate for lower energy
+        }
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+        return source;
+    }
+
+    function startNoise() {
+        if (!ctx) createAudioContext();
+        stopNoise();
+        noiseNode = noiseType === 'white' ? whiteNoise() : brownNoise();
+        noiseNode.connect(gainNode);
+        noiseNode.start();
+    }
+
+    function stopNoise() {
+        if (noiseNode) {
+            noiseNode.stop();
+            noiseNode.disconnect();
+            noiseNode = null;
+        }
+    }
+
+    function togglePlay() {
+        isPlaying = !isPlaying;
+        if (isPlaying) {
+            if (ctx?.state === 'suspended') ctx.resume();
+            startNoise();
+        } else {
+            stopNoise();
+        }
+    }
+
+    function setType(type) {
+        noiseType = type;
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.type === type);
+        });
+        // update accent color
+        document.documentElement.style.setProperty(
+            '--active', type === 'brown' ? 'var(--accent-brown)' : 'var(--accent-white)'
+        );
+        if (isPlaying) startNoise();
+    }
+
+    function setVolume(val) {
+        if (gainNode) gainNode.gain.value = val / 100;
+    }
+
+    // keyboard shortcut
+    document.addEventListener('keydown', e => {
+        if (e.code === 'Space' && e.target === document.body) {
+            e.preventDefault();
+            togglePlay();
+        }
+    });
+</script>
+</body>
+</html>
