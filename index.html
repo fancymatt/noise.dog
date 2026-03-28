@@ -148,13 +148,13 @@
     .preset-name {
       font-size: 30px;
       font-weight: 300;
-      color: var(--color-text-secondary);
+      color: var(--color-text-primary);
       text-align: center;
       line-height: 1.2;
-      transition: color 600ms ease;
+      transition: font-weight 600ms ease;
     }
     .preset-name.playing {
-      color: var(--color-text-primary);
+      font-weight: 400;
     }
 
     /* ─── Preset selector ────────────────────────────────────── */
@@ -315,19 +315,18 @@
 
   <div class="layout">
     <header class="brand" aria-label="noise.dog">
-      <svg class="brand-mark" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <g fill="currentColor">
-          <rect x="330" y="230" width="340" height="250" rx="60" ry="60"/>
-          <rect x="330" y="160" width="110" height="140" rx="25" ry="25"/>
-          <rect x="560" y="160" width="110" height="140" rx="25" ry="25"/>
-          <rect x="560" y="380" width="160" height="100" rx="35" ry="35"/>
-          <rect x="250" y="450" width="500" height="260" rx="70" ry="70"/>
-          <rect x="265" y="680" width="75" height="170" rx="35" ry="35"/>
-          <rect x="360" y="680" width="75" height="170" rx="35" ry="35"/>
-          <rect x="565" y="680" width="75" height="170" rx="35" ry="35"/>
-          <rect x="660" y="680" width="75" height="170" rx="35" ry="35"/>
-        </g>
-        <path d="M750,480 Q850,380 820,280" stroke="currentColor" stroke-width="80" fill="none" stroke-linecap="round"/>
+      <svg class="brand-mark" viewBox="0 0 1000 1000" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="
+          M 490,155 L 565,155 L 565,370 L 680,370
+          Q 750,370 800,400 Q 870,430 880,480 Q 890,540 850,560 Q 820,575 790,565
+          L 790,900 L 710,900 L 710,565
+          L 640,565 L 640,900 L 560,900 L 560,565
+          L 490,565 L 490,900 L 410,900 L 410,565
+          L 340,565 Q 280,560 240,520 Q 180,470 180,400
+          Q 180,330 230,290 Q 270,255 340,250 L 415,250 L 415,155 Z
+          M 260,315 Q 240,350 250,390 Q 270,430 320,440 L 340,440 L 340,300
+          Q 300,295 260,315 Z
+        "/>
       </svg>
       <h1 class="brand-title">noise.dog</h1>
     </header>
@@ -377,7 +376,12 @@
   </div>
 
   <script>
-    // ─── Presets ──────────────────────────────────────────────
+    // ─── Preset definitions ───────────────────────────────────
+    // Each preset has a layers array. Each layer:
+    //   source: "white" | "brown"
+    //   filters: [{ type, freq, Q?, gain? }]  — chained BiquadFilters
+    //   gain: 0–1  (layer volume, independent of master)
+    //   pan: -1 to 1
     const PRESETS = [
       {
         name: "Deep Focus",
@@ -385,9 +389,9 @@
         param: "df",
         glowColor: "200, 169, 110",
         layers: [
-          { source: "brown", filters: [{ type: "lowpass", freq: 800, Q: 0.7 }], gain: 0.8, pan: 0 },
-          { source: "brown", filters: [{ type: "bandpass", freq: 250, Q: 0.5 }], gain: 0.3, pan: 0 },
-        ],
+          { source: "brown", filters: [{ type: "lowpass",  freq: 800,  Q: 0.7 }], gain: 0.8, pan:  0 },
+          { source: "brown", filters: [{ type: "bandpass", freq: 250,  Q: 0.5 }], gain: 0.3, pan:  0 },
+        ]
       },
       {
         name: "Midnight Rain",
@@ -395,11 +399,11 @@
         param: "mr",
         glowColor: "110, 130, 155",
         layers: [
-          { source: "brown", filters: [{ type: "lowpass", freq: 200, Q: 0.8 }], gain: 0.6, pan: 0 },
-          { source: "white", filters: [{ type: "bandpass", freq: 6000, Q: 1.2 }, { type: "highpass", freq: 3000, Q: 0.5 }], gain: 0.15, pan: 0 },
-          { source: "white", filters: [{ type: "bandpass", freq: 4000, Q: 0.8 }], gain: 0.08, pan: -0.4 },
-          { source: "white", filters: [{ type: "bandpass", freq: 5000, Q: 0.8 }], gain: 0.08, pan: 0.4 },
-        ],
+          { source: "brown", filters: [{ type: "lowpass",  freq: 200,  Q: 0.8 }],                                              gain: 0.60, pan:  0   },
+          { source: "white", filters: [{ type: "bandpass", freq: 6000, Q: 1.2 }, { type: "highpass", freq: 3000, Q: 0.5 }],   gain: 0.15, pan:  0   },
+          { source: "white", filters: [{ type: "bandpass", freq: 4000, Q: 0.8 }],                                              gain: 0.08, pan: -0.4 },
+          { source: "white", filters: [{ type: "bandpass", freq: 5000, Q: 0.8 }],                                              gain: 0.08, pan:  0.4 },
+        ]
       },
       {
         name: "Embers",
@@ -407,10 +411,10 @@
         param: "em",
         glowColor: "210, 135, 75",
         layers: [
-          { source: "brown", filters: [{ type: "lowpass", freq: 400, Q: 0.6 }], gain: 0.7, pan: 0 },
-          { source: "white", filters: [{ type: "bandpass", freq: 3000, Q: 2.0 }, { type: "highpass", freq: 1500, Q: 0.5 }], gain: 0.06, pan: 0.1 },
-          { source: "brown", filters: [{ type: "lowpass", freq: 120, Q: 1.0 }], gain: 0.4, pan: 0 },
-        ],
+          { source: "brown", filters: [{ type: "lowpass",  freq: 400,  Q: 0.6 }],                                              gain: 0.70, pan:  0   },
+          { source: "white", filters: [{ type: "bandpass", freq: 3000, Q: 2.0 }, { type: "highpass", freq: 1500, Q: 0.5 }],   gain: 0.06, pan:  0.1 },
+          { source: "brown", filters: [{ type: "lowpass",  freq: 120,  Q: 1.0 }],                                              gain: 0.40, pan:  0   },
+        ]
       },
       {
         name: "Coastal Wind",
@@ -418,12 +422,12 @@
         param: "cw",
         glowColor: "130, 160, 150",
         layers: [
-          { source: "brown", filters: [{ type: "lowpass", freq: 600, Q: 0.5 }], gain: 0.5, pan: 0 },
-          { source: "white", filters: [{ type: "lowshelf", freq: 1000, gain: -6 }, { type: "bandpass", freq: 1200, Q: 0.4 }], gain: 0.25, pan: 0 },
-          { source: "white", filters: [{ type: "highpass", freq: 2500, Q: 0.3 }, { type: "lowpass", freq: 8000, Q: 0.5 }], gain: 0.1, pan: 0 },
-          { source: "white", filters: [{ type: "bandpass", freq: 1800, Q: 0.6 }], gain: 0.05, pan: -0.6 },
-          { source: "white", filters: [{ type: "bandpass", freq: 2200, Q: 0.6 }], gain: 0.05, pan: 0.6 },
-        ],
+          { source: "brown", filters: [{ type: "lowpass",  freq: 600,  Q: 0.5 }],                                                                          gain: 0.50, pan:  0   },
+          { source: "white", filters: [{ type: "lowshelf", freq: 1000, Q: 1.0, gain: -6 }, { type: "bandpass", freq: 1200, Q: 0.4 }],                      gain: 0.25, pan:  0   },
+          { source: "white", filters: [{ type: "highpass", freq: 2500, Q: 0.3 }, { type: "lowpass", freq: 8000, Q: 0.5 }],                                 gain: 0.10, pan:  0   },
+          { source: "white", filters: [{ type: "bandpass", freq: 1800, Q: 0.6 }],                                                                          gain: 0.05, pan: -0.6 },
+          { source: "white", filters: [{ type: "bandpass", freq: 2200, Q: 0.6 }],                                                                          gain: 0.05, pan:  0.6 },
+        ]
       },
       {
         name: "Drift",
@@ -431,33 +435,26 @@
         param: "dr",
         glowColor: "160, 155, 180",
         layers: [
-          { source: "brown", filters: [{ type: "lowpass", freq: 300, Q: 0.8 }], gain: 0.7, pan: 0 },
-          { source: "brown", filters: [{ type: "bandpass", freq: 500, Q: 0.3 }], gain: 0.2, pan: 0 },
-          { source: "white", filters: [{ type: "bandpass", freq: 7000, Q: 1.5 }], gain: 0.03, pan: 0 },
-          { source: "brown", filters: [{ type: "lowpass", freq: 400, Q: 0.5 }], gain: 0.1, pan: -0.3 },
-          { source: "brown", filters: [{ type: "lowpass", freq: 400, Q: 0.5 }], gain: 0.1, pan: 0.3 },
-        ],
+          { source: "brown", filters: [{ type: "lowpass",  freq: 300,  Q: 0.8 }], gain: 0.70, pan:  0   },
+          { source: "brown", filters: [{ type: "bandpass", freq: 500,  Q: 0.3 }], gain: 0.20, pan:  0   },
+          { source: "white", filters: [{ type: "bandpass", freq: 7000, Q: 1.5 }], gain: 0.03, pan:  0   },
+          { source: "brown", filters: [{ type: "lowpass",  freq: 400,  Q: 0.5 }], gain: 0.10, pan: -0.3 },
+          { source: "brown", filters: [{ type: "lowpass",  freq: 400,  Q: 0.5 }], gain: 0.10, pan:  0.3 },
+        ]
       },
     ];
 
+    // ─── State ────────────────────────────────────────────────
     let currentPresetIndex = 0;
     let isPlaying = false;
-    let ctx, masterGain;
-    let activeLayers = [];
-    let noiseBuffers;
-    let presetSwapTimer = null;
-    let targetVolume = 0.5;
 
     // ─── Audio engine ─────────────────────────────────────────
-    function createAudioContext() {
-      ctx = new (window.AudioContext || window.webkitAudioContext)();
-      masterGain = ctx.createGain();
-      masterGain.gain.value = targetVolume;
-      masterGain.connect(ctx.destination);
-      initBuffers();
-    }
+    let ctx, gainNode;
+    let sharedBuffers = {};   // { white: AudioBuffer, brown: AudioBuffer }
+    let activeLayers  = [];   // [{ source, layerGain, panner, targetGain }]
 
-    function whiteNoise() {
+    // Generate a raw AudioBuffer (not a source node) — called once at init.
+    function generateWhiteBuffer() {
       const bufferSize = 2 * ctx.sampleRate;
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
@@ -467,7 +464,7 @@
       return buffer;
     }
 
-    function brownNoise() {
+    function generateBrownBuffer() {
       const bufferSize = 2 * ctx.sampleRate;
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
@@ -482,112 +479,110 @@
     }
 
     function initBuffers() {
-      noiseBuffers = {
-        white: whiteNoise(),
-        brown: brownNoise(),
-      };
+      sharedBuffers.white = generateWhiteBuffer();
+      sharedBuffers.brown = generateBrownBuffer();
     }
 
-    function createLayer(layerDef) {
+    function createAudioContext() {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      gainNode = ctx.createGain();
+      gainNode.gain.value = volumeSlider ? parseInt(volumeSlider.value, 10) / 100 : 0.5;
+      gainNode.connect(ctx.destination);
+      initBuffers();
+    }
+
+    // Build one audio chain: BufferSource → BiquadFilter(s) → GainNode → StereoPanner → masterGain
+    // startGain: if provided, layer gain starts here (used for crossfade — start new layers at 0).
+    function createLayer(layerDef, startGain) {
       const source = ctx.createBufferSource();
-      source.buffer = noiseBuffers[layerDef.source];
+      source.buffer = sharedBuffers[layerDef.source];
       source.loop = true;
 
-      let output = source;
-      const filters = layerDef.filters.map((filterDef) => {
+      let lastNode = source;
+
+      for (const f of layerDef.filters) {
         const filter = ctx.createBiquadFilter();
-        filter.type = filterDef.type;
-        filter.frequency.value = filterDef.freq;
-        if (typeof filterDef.Q === 'number') filter.Q.value = filterDef.Q;
-        if (typeof filterDef.gain === 'number') filter.gain.value = filterDef.gain;
-        output.connect(filter);
-        output = filter;
-        return filter;
-      });
+        filter.type = f.type;
+        filter.frequency.value = f.freq;
+        if (f.Q    !== undefined) filter.Q.value    = f.Q;
+        if (f.gain !== undefined) filter.gain.value = f.gain;
+        lastNode.connect(filter);
+        lastNode = filter;
+      }
 
-      const gain = ctx.createGain();
-      gain.gain.value = layerDef.gain;
-      output.connect(gain);
+      const layerGain = ctx.createGain();
+      layerGain.gain.value = (startGain !== undefined) ? startGain : layerDef.gain;
+      lastNode.connect(layerGain);
 
-      const pan = ctx.createStereoPanner();
-      pan.pan.value = layerDef.pan;
-      gain.connect(pan);
-      pan.connect(masterGain);
+      const panner = ctx.createStereoPanner();
+      panner.pan.value = layerDef.pan;
+      layerGain.connect(panner);
+      panner.connect(gainNode);
 
-      return { source, filters, gain, pan };
+      source.start();
+
+      return { source, layerGain, panner, targetGain: layerDef.gain };
     }
 
-    function startPreset(resetGain = true) {
+    function stopLayer(layer) {
+      try { layer.source.stop(); } catch (_) {}
+      try { layer.source.disconnect(); } catch (_) {}
+    }
+
+    // Start the current preset from silence (initial play).
+    function startPreset() {
       if (!ctx) createAudioContext();
-      stopPreset();
-      if (resetGain) {
-        masterGain.gain.cancelScheduledValues(ctx.currentTime);
-        masterGain.gain.setValueAtTime(targetVolume, ctx.currentTime);
-      }
-      const preset = PRESETS[currentPresetIndex];
-      activeLayers = preset.layers.map(createLayer);
-      activeLayers.forEach((layer) => layer.source.start());
+      if (ctx.state === 'suspended') ctx.resume();
+
+      for (const layer of activeLayers) stopLayer(layer);
+      activeLayers = PRESETS[currentPresetIndex].layers.map(l => createLayer(l));
     }
 
-    function startPresetCrossfade() {
-      if (!ctx) {
-        startPreset();
-        return;
-      }
-
-      const now = ctx.currentTime;
-      const FADE = 0.15; // 150ms ramp down/up
-      const currentVolume = masterGain.gain.value;
-
-      if (presetSwapTimer) {
-        clearTimeout(presetSwapTimer);
-        presetSwapTimer = null;
-      }
-
-      masterGain.gain.cancelScheduledValues(now);
-      masterGain.gain.setValueAtTime(currentVolume, now);
-      masterGain.gain.linearRampToValueAtTime(0, now + FADE);
-
-      presetSwapTimer = setTimeout(() => {
-        stopPreset();
-        startPreset(false);
-
-        const t = ctx.currentTime;
-        masterGain.gain.cancelScheduledValues(t);
-        masterGain.gain.setValueAtTime(0, t);
-        masterGain.gain.linearRampToValueAtTime(targetVolume || currentVolume, t + FADE);
-        presetSwapTimer = null;
-      }, FADE * 1000);
-    }
-
+    // Stop all layers immediately.
     function stopPreset() {
-      if (presetSwapTimer) {
-        clearTimeout(presetSwapTimer);
-        presetSwapTimer = null;
-      }
-
-      activeLayers.forEach((layer) => {
-        try {
-          layer.source.stop();
-        } catch (error) {
-          // Sources can only stop once; ignore stale stop attempts during swaps.
-        }
-
-        layer.source.disconnect();
-        layer.filters.forEach((filter) => filter.disconnect());
-        layer.gain.disconnect();
-        layer.pan.disconnect();
-      });
+      for (const layer of activeLayers) stopLayer(layer);
       activeLayers = [];
     }
 
+    // Overlapping crossfade to a new preset (~400ms).
+    // New layers start at gain=0 and ramp up while old layers ramp down.
+    // No silence gap — both sets play simultaneously during the fade window.
+    const CROSSFADE_SECS = 0.4;
+
+    function crossfadeToPreset() {
+      if (!ctx) { startPreset(); return; }
+      if (ctx.state === 'suspended') ctx.resume();
+
+      const oldLayers = activeLayers;
+      const now = ctx.currentTime;
+
+      // Start new layers at 0
+      activeLayers = PRESETS[currentPresetIndex].layers.map(l => createLayer(l, 0));
+
+      // Ramp new layers up
+      for (const layer of activeLayers) {
+        layer.layerGain.gain.cancelScheduledValues(now);
+        layer.layerGain.gain.setValueAtTime(0, now);
+        layer.layerGain.gain.linearRampToValueAtTime(layer.targetGain, now + CROSSFADE_SECS);
+      }
+
+      // Ramp old layers down and stop after fade
+      for (const layer of oldLayers) {
+        const current = layer.layerGain.gain.value;
+        layer.layerGain.gain.cancelScheduledValues(now);
+        layer.layerGain.gain.setValueAtTime(current, now);
+        layer.layerGain.gain.linearRampToValueAtTime(0, now + CROSSFADE_SECS);
+      }
+      setTimeout(() => {
+        for (const layer of oldLayers) stopLayer(layer);
+      }, (CROSSFADE_SECS * 1000) + 50);
+    }
+
     // ─── Glow system ──────────────────────────────────────────
-    // Two-layer crossfade: layerA and layerB alternate as active/incoming.
-    // The parent .bg-glow controls overall opacity (play/pause, breathing anim).
-    const bgGlow  = document.getElementById('bgGlow');
+    const bgGlow     = document.getElementById('bgGlow');
     const glowLayerA = document.getElementById('bgGlowA');
     const glowLayerB = document.getElementById('bgGlowB');
-    let activeGlowLayer = glowLayerA; // starts as active
+    let   activeGlowLayer = glowLayerA;
 
     function glowGradient(color) {
       return `radial-gradient(ellipse at center, rgba(${color}, 1) 0%, transparent 70%)`;
@@ -597,38 +592,30 @@
       const preset = PRESETS[currentPresetIndex];
       activeGlowLayer.style.background = glowGradient(preset.glowColor);
       activeGlowLayer.style.opacity = '1';
-      // Fade parent in over 2.5s, then breathing animation takes over
       bgGlow.style.transition = 'opacity 2.5s ease';
       bgGlow.style.opacity = '1';
       bgGlow.classList.add('playing');
     }
 
     function hideGlow() {
-      // Freeze the current computed opacity before removing the animation class.
-      // Without this, some browsers (Firefox) snap the element to its base opacity
-      // when the animation is removed, causing a visible flash before the fade-out.
-      const currentOpacity = getComputedStyle(bgGlow).opacity;
-      bgGlow.style.opacity = currentOpacity;
       bgGlow.classList.remove('playing');
       bgGlow.style.transition = 'opacity 1.5s ease';
       bgGlow.style.opacity = '0';
     }
 
     function updateGlowColor(glowColor) {
-      // 800ms crossfade: fade in the inactive layer with new color, fade out active
       const incomingLayer = activeGlowLayer === glowLayerA ? glowLayerB : glowLayerA;
       incomingLayer.style.background = glowGradient(glowColor);
-      incomingLayer.style.opacity = '1';       // fade in (800ms via CSS transition)
-      activeGlowLayer.style.opacity = '0';     // fade out (800ms via CSS transition)
+      incomingLayer.style.opacity = '1';
+      activeGlowLayer.style.opacity = '0';
       activeGlowLayer = incomingLayer;
     }
 
-    // ─── Play icon morph ──────────────────────────────────────
+    // ─── Play icon crossfade ──────────────────────────────────
     const iconPlay  = document.getElementById('iconPlay');
     const iconPause = document.getElementById('iconPause');
 
     function updatePlayIcon(playing) {
-      // Total morph: 140ms exit fade + 140ms enter fade ≈ 280ms spec
       if (playing) {
         iconPlay.style.opacity = '0';
         setTimeout(() => {
@@ -649,7 +636,7 @@
     }
 
     // ─── Toggle play ──────────────────────────────────────────
-    const playBtn    = document.getElementById('playBtn');
+    const playBtn     = document.getElementById('playBtn');
     const presetNameEl = document.getElementById('presetName');
 
     function togglePlay() {
@@ -659,7 +646,6 @@
       updatePlayIcon(isPlaying);
 
       if (isPlaying) {
-        if (ctx?.state === 'suspended') ctx.resume();
         startPreset();
         showGlow();
         presetNameEl.classList.add('playing');
@@ -687,8 +673,7 @@
     }
 
     function syncPresetButtons(index) {
-      const buttons = document.querySelectorAll('.preset-btn');
-      buttons.forEach((btn, i) => {
+      document.querySelectorAll('.preset-btn').forEach((btn, i) => {
         btn.classList.toggle('active', i === index);
         btn.setAttribute('aria-pressed', String(i === index));
       });
@@ -711,74 +696,32 @@
       currentPresetIndex = index;
       const preset = PRESETS[index];
 
-      // Update capsules
+      // Update capsule active states
       syncPresetButtons(index);
 
-      // Update preset name with transition
+      // Animate preset name
       transitionPresetName(preset.name);
 
-      // Update glow color and audio if playing
+      // Audio + glow if playing
       if (isPlaying) {
         updateGlowColor(preset.glowColor);
-        startPresetCrossfade();
+        crossfadeToPreset();
       }
 
-      // Persist preset and update URL
-      storage.savePreset(preset.slug);
+      // Update URL
       if (!skipUrlUpdate) updatePresetUrl(index);
     }
-
-    // ─── Persistence ──────────────────────────────────────────
-    // Graceful fallback when localStorage is unavailable (private browsing, etc.)
-    const storage = (() => {
-      const PRESET_KEY = 'noise.dog:preset';
-      const VOLUME_KEY = 'noise.dog:volume';
-      let available = false;
-      try {
-        localStorage.setItem('__test__', '1');
-        localStorage.removeItem('__test__');
-        available = true;
-      } catch (e) { /* storage unavailable */ }
-
-      return {
-        savePreset(slug) {
-          if (!available) return;
-          try { localStorage.setItem(PRESET_KEY, slug); } catch (e) {}
-        },
-        saveVolume(val) {
-          if (!available) return;
-          try { localStorage.setItem(VOLUME_KEY, String(val)); } catch (e) {}
-        },
-        loadPreset() {
-          if (!available) return null;
-          try { return localStorage.getItem(PRESET_KEY); } catch (e) { return null; }
-        },
-        loadVolume() {
-          if (!available) return null;
-          try {
-            const v = localStorage.getItem(VOLUME_KEY);
-            if (v === null) return null;
-            const n = parseInt(v, 10);
-            return isNaN(n) ? null : Math.max(0, Math.min(100, n));
-          } catch (e) { return null; }
-        },
-      };
-    })();
 
     // ─── Volume ───────────────────────────────────────────────
     const volumeSlider = document.getElementById('volume');
 
-    function setVolume(val, persist = false) {
-      targetVolume = val / 100;
-      if (masterGain) masterGain.gain.value = targetVolume;
-      volumeSlider.value = val;
-      volumeSlider.style.setProperty('--vol-pct', val + '%');
+    function setVolume(val) {
+      if (gainNode) gainNode.gain.value = val / 100;
       document.documentElement.style.setProperty('--vol-pct', val + '%');
-      if (persist) storage.saveVolume(val);
     }
 
     volumeSlider.addEventListener('input', (e) => {
-      setVolume(parseInt(e.target.value, 10), true);
+      setVolume(parseInt(e.target.value, 10));
     });
 
     // ─── Build preset buttons ─────────────────────────────────
@@ -807,51 +750,42 @@
         togglePlay();
       } else if (e.code === 'ArrowLeft') {
         e.preventDefault();
-        const prev = (currentPresetIndex - 1 + PRESETS.length) % PRESETS.length;
-        selectPreset(prev);
+        selectPreset((currentPresetIndex - 1 + PRESETS.length) % PRESETS.length);
       } else if (e.code === 'ArrowRight') {
         e.preventDefault();
-        const next = (currentPresetIndex + 1) % PRESETS.length;
-        selectPreset(next);
+        selectPreset((currentPresetIndex + 1) % PRESETS.length);
       }
     });
 
-    // ─── Init: URL → localStorage → default ──────────────────
-    // Priority: short URL param > legacy preset param > localStorage > default
-    (function initFromUrl() {
+    // ─── Init from URL ────────────────────────────────────────
+    (function init() {
       const params = new URLSearchParams(window.location.search);
       const shortParam = params.get('p');
       const legacySlug = params.get('preset');
-      const storedSlug = storage.loadPreset();
 
-      let idx = -1;
+      let idx = PRESETS.findIndex(preset => preset.param === shortParam);
+      let shouldNormalizeUrl = Boolean(shortParam || legacySlug);
 
-      if (shortParam) {
-        idx = PRESETS.findIndex(p => p.param === shortParam);
-      }
       if (idx < 0 && legacySlug) {
-        idx = PRESETS.findIndex(p => p.slug === legacySlug);
-      }
-      if (idx < 0 && storedSlug) {
-        idx = PRESETS.findIndex(p => p.slug === storedSlug);
+        idx = PRESETS.findIndex(preset => preset.slug === legacySlug);
       }
 
       if (idx >= 0) {
         currentPresetIndex = idx;
         syncPresetButtons(idx);
         presetNameEl.textContent = PRESETS[idx].name;
-
-        // Normalize legacy or storage-derived URLs to the short param format.
-        if (!shortParam || legacySlug) {
+        if (shortParam !== PRESETS[idx].param || legacySlug) {
           updatePresetUrl(idx);
         }
       } else {
+        shouldNormalizeUrl = false;
+      }
+
+      if (!shouldNormalizeUrl) {
         syncPresetButtons(currentPresetIndex);
       }
 
-      // Restore volume (or default to 50)
-      const savedVol = storage.loadVolume();
-      setVolume(savedVol !== null ? savedVol : 50);
+      setVolume(50);
     })();
   </script>
 </body>
