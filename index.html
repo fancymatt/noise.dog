@@ -316,17 +316,26 @@
   <div class="layout">
     <header class="brand" aria-label="noise.dog">
       <svg class="brand-mark" viewBox="0 0 1000 1000" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="
-          M 490,155 L 565,155 L 565,370 L 680,370
-          Q 750,370 800,400 Q 870,430 880,480 Q 890,540 850,560 Q 820,575 790,565
-          L 790,900 L 710,900 L 710,565
-          L 640,565 L 640,900 L 560,900 L 560,565
-          L 490,565 L 490,900 L 410,900 L 410,565
-          L 340,565 Q 280,560 240,520 Q 180,470 180,400
-          Q 180,330 230,290 Q 270,255 340,250 L 415,250 L 415,155 Z
-          M 260,315 Q 240,350 250,390 Q 270,430 320,440 L 340,440 L 340,300
-          Q 300,295 260,315 Z
-        "/>
+        <defs>
+          <mask id="legcuts">
+            <rect width="1000" height="1000" fill="white"/>
+            <rect x="424" y="468" width="58" height="435" fill="black"/>
+            <rect x="561" y="468" width="77" height="435" fill="black"/>
+            <rect x="717" y="468" width="57" height="435" fill="black"/>
+          </mask>
+        </defs>
+        <g mask="url(#legcuts)">
+          <rect x="185" y="130" width="82" height="220" rx="22"/>
+          <rect x="322" y="130" width="82" height="220" rx="22"/>
+          <ellipse cx="365" cy="418" rx="278" ry="155"/>
+          <ellipse cx="108" cy="445" rx="88" ry="68"/>
+          <rect x="345" y="372" width="498" height="170" rx="58"/>
+          <ellipse cx="870" cy="398" rx="76" ry="98"/>
+          <rect x="345" y="468" width="79" height="435" rx="20"/>
+          <rect x="482" y="468" width="79" height="435" rx="20"/>
+          <rect x="638" y="468" width="79" height="435" rx="20"/>
+          <rect x="774" y="468" width="79" height="435" rx="20"/>
+        </g>
       </svg>
       <h1 class="brand-title">noise.dog</h1>
     </header>

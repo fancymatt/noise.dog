@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" fill="currentColor">
+  <title>noise.dog — Hero Mark</title>
+  <defs>
+    <mask id="legcuts">
+      <rect width="1000" height="1000" fill="white"/>
+      <!-- Negative space cuts between legs -->
+      <rect x="424" y="468" width="58" height="435" fill="black"/>
+      <rect x="561" y="468" width="77" height="435" fill="black"/>
+      <rect x="717" y="468" width="57" height="435" fill="black"/>
+    </mask>
+  </defs>
+  <g mask="url(#legcuts)">
+    <!-- Ears: two tall narrow vertical rounded rects over left side of head -->
+    <rect x="185" y="130" width="82" height="220" rx="22"/>
+    <rect x="322" y="130" width="82" height="220" rx="22"/>
+    <!-- Head: wide horizontal oval -->
+    <ellipse cx="365" cy="418" rx="278" ry="155"/>
+    <!-- Nose: small snout ellipse protruding left -->
+    <ellipse cx="108" cy="445" rx="88" ry="68"/>
+    <!-- Body: long horizontal block connecting head to tail -->
+    <rect x="345" y="372" width="498" height="170" rx="58"/>
+    <!-- Tail: round ellipse on far right -->
+    <ellipse cx="870" cy="398" rx="76" ry="98"/>
+    <!-- Four legs: vertical rounded rects hanging down -->
+    <rect x="345" y="468" width="79" height="435" rx="20"/>
+    <rect x="482" y="468" width="79" height="435" rx="20"/>
+    <rect x="638" y="468" width="79" height="435" rx="20"/>
+    <rect x="774" y="468" width="79" height="435" rx="20"/>
+  </g>
+</svg>
