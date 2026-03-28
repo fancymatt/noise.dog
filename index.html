@@ -586,6 +586,11 @@
     }
 
     function hideGlow() {
+      // Freeze the current computed opacity before removing the animation class.
+      // Without this, some browsers (Firefox) snap the element to its base opacity
+      // when the animation is removed, causing a visible flash before the fade-out.
+      const currentOpacity = getComputedStyle(bgGlow).opacity;
+      bgGlow.style.opacity = currentOpacity;
       bgGlow.classList.remove('playing');
       bgGlow.style.transition = 'opacity 1.5s ease';
       bgGlow.style.opacity = '0';
