@@ -607,7 +607,11 @@
     }
 
     function hideGlow() {
+      const currentOpacity = getComputedStyle(bgGlow).opacity;
       bgGlow.classList.remove('playing');
+      bgGlow.style.transition = 'none';
+      bgGlow.style.opacity = currentOpacity;
+      void bgGlow.offsetWidth;
       bgGlow.style.transition = 'opacity 1.5s ease';
       bgGlow.style.opacity = '0';
     }
