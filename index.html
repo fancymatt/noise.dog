@@ -687,10 +687,8 @@
         startPresetCrossfade();
       }
 
-      // Persist preset
-      storageSave(STORAGE_PRESET, preset.slug);
-
-      // Update URL
+      // Persist preset and update URL
+      storage.savePreset(preset.slug);
       if (!skipUrlUpdate) {
         const url = new URL(window.location.href);
         url.searchParams.set('preset', preset.slug);
@@ -699,31 +697,56 @@
     }
 
     // ─── Persistence ──────────────────────────────────────────
-    const STORAGE_PRESET = 'nd_preset';
-    const STORAGE_VOLUME = 'nd_volume';
+    // Graceful fallback when localStorage is unavailable (private browsing, etc.)
+    const storage = (() => {
+      const PRESET_KEY = 'noise.dog:preset';
+      const VOLUME_KEY = 'noise.dog:volume';
+      let available = false;
+      try {
+        localStorage.setItem('__test__', '1');
+        localStorage.removeItem('__test__');
+        available = true;
+      } catch (e) { /* storage unavailable */ }
 
-    function storageSave(key, value) {
-      try { localStorage.setItem(key, value); } catch (e) { /* private browsing / quota — ignore */ }
-    }
-
-    function storageGet(key) {
-      try { return localStorage.getItem(key); } catch (e) { return null; }
-    }
+      return {
+        savePreset(slug) {
+          if (!available) return;
+          try { localStorage.setItem(PRESET_KEY, slug); } catch (e) {}
+        },
+        saveVolume(val) {
+          if (!available) return;
+          try { localStorage.setItem(VOLUME_KEY, String(val)); } catch (e) {}
+        },
+        loadPreset() {
+          if (!available) return null;
+          try { return localStorage.getItem(PRESET_KEY); } catch (e) { return null; }
+        },
+        loadVolume() {
+          if (!available) return null;
+          try {
+            const v = localStorage.getItem(VOLUME_KEY);
+            if (v === null) return null;
+            const n = parseInt(v, 10);
+            return isNaN(n) ? null : Math.max(0, Math.min(100, n));
+          } catch (e) { return null; }
+        },
+      };
+    })();
 
     // ─── Volume ───────────────────────────────────────────────
     const volumeSlider = document.getElementById('volume');
 
-    function setVolume(val) {
+    function setVolume(val, persist = false) {
       targetVolume = val / 100;
       if (masterGain) masterGain.gain.value = targetVolume;
+      volumeSlider.value = val;
       volumeSlider.style.setProperty('--vol-pct', val + '%');
       document.documentElement.style.setProperty('--vol-pct', val + '%');
+      if (persist) storage.saveVolume(val);
     }
 
     volumeSlider.addEventListener('input', (e) => {
-      const val = parseInt(e.target.value, 10);
-      setVolume(val);
-      storageSave(STORAGE_VOLUME, val);
+      setVolume(parseInt(e.target.value, 10), true);
     });
 
     // ─── Build preset buttons ─────────────────────────────────
@@ -761,13 +784,16 @@
       }
     });
 
-    // ─── Init from URL / localStorage ────────────────────────
+    // ─── Init: URL → localStorage → default ──────────────────
+    // Priority: URL param > localStorage > default (Deep Focus, vol 50)
     (function initFromUrl() {
       const params = new URLSearchParams(window.location.search);
-      // URL param takes priority; fall back to localStorage
-      const slug = params.get('preset') || storageGet(STORAGE_PRESET);
-      if (slug) {
-        const idx = PRESETS.findIndex(p => p.slug === slug);
+      const urlSlug = params.get('preset');
+
+      // Resolve starting preset
+      const resolvedSlug = urlSlug || storage.loadPreset();
+      if (resolvedSlug) {
+        const idx = PRESETS.findIndex(p => p.slug === resolvedSlug);
         if (idx > 0) {
           currentPresetIndex = idx;
           const buttons = document.querySelectorAll('.preset-btn');
@@ -776,14 +802,18 @@
             btn.setAttribute('aria-pressed', String(i === idx));
           });
           presetNameEl.textContent = PRESETS[idx].name;
+          // Sync URL to resolved preset (handles localStorage→URL)
+          if (!urlSlug) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('preset', PRESETS[idx].slug);
+            history.replaceState(null, '', url.toString());
+          }
         }
       }
 
-      // Restore saved volume (default 50)
-      const savedVolume = parseInt(storageGet(STORAGE_VOLUME), 10);
-      const initialVolume = (!isNaN(savedVolume) && savedVolume >= 0 && savedVolume <= 100) ? savedVolume : 50;
-      volumeSlider.value = initialVolume;
-      setVolume(initialVolume);
+      // Restore volume (or default to 50)
+      const savedVol = storage.loadVolume();
+      setVolume(savedVol !== null ? savedVol : 50);
     })();
   </script>
 </body>
