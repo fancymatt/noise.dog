@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>noise.dog</title>
+  <title>noise.dog — Deep Brown Noise & Ambient Sounds for Focus</title>
+  <meta name="description" content="A minimalist, free ambient noise generator for focus and sleep. Featuring deep brown noise, midnight rain, and warm acoustic environments. No signup required.">
+  <meta property="og:title" content="noise.dog — Ambient Sounds for Focus">
+  <meta property="og:description" content="A minimalist, free ambient noise generator for focus and sleep. No signup required.">
+  <meta property="og:url" content="https://noise.dog">
+  <meta property="og:type" content="website">
   <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
@@ -124,6 +129,13 @@
       height: 28px;
       width: auto;
       flex-shrink: 0;
+    }
+    .brand-title {
+      font-size: inherit;
+      font-weight: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
+      color: inherit;
     }
 
     /* ─── Spacers ────────────────────────────────────────────── */
@@ -317,7 +329,7 @@
         </g>
         <path d="M750,480 Q850,380 820,280" stroke="currentColor" stroke-width="80" fill="none" stroke-linecap="round"/>
       </svg>
-      <span>noise.dog</span>
+      <h1 class="brand-title">noise.dog</h1>
     </header>
 
     <div class="spacer"></div>
@@ -370,6 +382,7 @@
       {
         name: "Deep Focus",
         slug: "deep-focus",
+        param: "df",
         glowColor: "200, 169, 110",
         layers: [
           { source: "brown", filters: [{ type: "lowpass", freq: 800, Q: 0.7 }], gain: 0.8, pan: 0 },
@@ -379,6 +392,7 @@
       {
         name: "Midnight Rain",
         slug: "midnight-rain",
+        param: "mr",
         glowColor: "110, 130, 155",
         layers: [
           { source: "brown", filters: [{ type: "lowpass", freq: 200, Q: 0.8 }], gain: 0.6, pan: 0 },
@@ -390,6 +404,7 @@
       {
         name: "Embers",
         slug: "embers",
+        param: "em",
         glowColor: "210, 135, 75",
         layers: [
           { source: "brown", filters: [{ type: "lowpass", freq: 400, Q: 0.6 }], gain: 0.7, pan: 0 },
@@ -400,6 +415,7 @@
       {
         name: "Coastal Wind",
         slug: "coastal-wind",
+        param: "cw",
         glowColor: "130, 160, 150",
         layers: [
           { source: "brown", filters: [{ type: "lowpass", freq: 600, Q: 0.5 }], gain: 0.5, pan: 0 },
@@ -412,6 +428,7 @@
       {
         name: "Drift",
         slug: "drift",
+        param: "dr",
         glowColor: "160, 155, 180",
         layers: [
           { source: "brown", filters: [{ type: "lowpass", freq: 300, Q: 0.8 }], gain: 0.7, pan: 0 },
@@ -669,20 +686,33 @@
       }, 100);
     }
 
-    // ─── Select preset ────────────────────────────────────────
-    function selectPreset(index, skipUrlUpdate) {
-      if (index === currentPresetIndex) return;
-
-      const prev = currentPresetIndex;
-      currentPresetIndex = index;
-      const preset = PRESETS[index];
-
-      // Update capsules
+    function syncPresetButtons(index) {
       const buttons = document.querySelectorAll('.preset-btn');
       buttons.forEach((btn, i) => {
         btn.classList.toggle('active', i === index);
         btn.setAttribute('aria-pressed', String(i === index));
       });
+    }
+
+    function updatePresetUrl(index) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('p', PRESETS[index].param);
+      url.searchParams.delete('preset');
+      history.replaceState(null, '', url.toString());
+    }
+
+    // ─── Select preset ────────────────────────────────────────
+    function selectPreset(index, skipUrlUpdate) {
+      if (index === currentPresetIndex) {
+        if (!skipUrlUpdate) updatePresetUrl(index);
+        return;
+      }
+
+      currentPresetIndex = index;
+      const preset = PRESETS[index];
+
+      // Update capsules
+      syncPresetButtons(index);
 
       // Update preset name with transition
       transitionPresetName(preset.name);
@@ -695,11 +725,7 @@
 
       // Persist preset and update URL
       storage.savePreset(preset.slug);
-      if (!skipUrlUpdate) {
-        const url = new URL(window.location.href);
-        url.searchParams.set('preset', preset.slug);
-        history.replaceState(null, '', url.toString());
-      }
+      if (!skipUrlUpdate) updatePresetUrl(index);
     }
 
     // ─── Persistence ──────────────────────────────────────────
@@ -791,30 +817,36 @@
     });
 
     // ─── Init: URL → localStorage → default ──────────────────
-    // Priority: URL param > localStorage > default (Deep Focus, vol 50)
+    // Priority: short URL param > legacy preset param > localStorage > default
     (function initFromUrl() {
       const params = new URLSearchParams(window.location.search);
-      const urlSlug = params.get('preset');
+      const shortParam = params.get('p');
+      const legacySlug = params.get('preset');
+      const storedSlug = storage.loadPreset();
 
-      // Resolve starting preset
-      const resolvedSlug = urlSlug || storage.loadPreset();
-      if (resolvedSlug) {
-        const idx = PRESETS.findIndex(p => p.slug === resolvedSlug);
-        if (idx > 0) {
-          currentPresetIndex = idx;
-          const buttons = document.querySelectorAll('.preset-btn');
-          buttons.forEach((btn, i) => {
-            btn.classList.toggle('active', i === idx);
-            btn.setAttribute('aria-pressed', String(i === idx));
-          });
-          presetNameEl.textContent = PRESETS[idx].name;
-          // Sync URL to resolved preset (handles localStorage→URL)
-          if (!urlSlug) {
-            const url = new URL(window.location.href);
-            url.searchParams.set('preset', PRESETS[idx].slug);
-            history.replaceState(null, '', url.toString());
-          }
+      let idx = -1;
+
+      if (shortParam) {
+        idx = PRESETS.findIndex(p => p.param === shortParam);
+      }
+      if (idx < 0 && legacySlug) {
+        idx = PRESETS.findIndex(p => p.slug === legacySlug);
+      }
+      if (idx < 0 && storedSlug) {
+        idx = PRESETS.findIndex(p => p.slug === storedSlug);
+      }
+
+      if (idx >= 0) {
+        currentPresetIndex = idx;
+        syncPresetButtons(idx);
+        presetNameEl.textContent = PRESETS[idx].name;
+
+        // Normalize legacy or storage-derived URLs to the short param format.
+        if (!shortParam || legacySlug) {
+          updatePresetUrl(idx);
         }
+      } else {
+        syncPresetButtons(currentPresetIndex);
       }
 
       // Restore volume (or default to 50)
