@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>noise.dog</title>
-  <link rel="icon" type="image/x-icon" href="images/favicon.png">
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
@@ -69,20 +71,26 @@
       inset: 0;
       pointer-events: none;
       z-index: 0;
+      opacity: 0;
+      transition: opacity 1.5s ease;
+    }
+    .bg-glow-layer {
+      position: absolute;
+      inset: 0;
       background: radial-gradient(
         ellipse at center,
-        rgba(var(--glow-color), 0) 0%,
+        rgba(var(--glow-color), 1) 0%,
         transparent 70%
       );
       opacity: 0;
-      transition: opacity 1.5s ease;
+      transition: opacity 800ms ease;
     }
     .bg-glow.playing {
       animation: breathe 10s ease-in-out infinite;
     }
     @keyframes breathe {
-      0%, 100% { opacity: 0.7; }
-      50%       { opacity: 1; }
+      0%, 100% { opacity: 0.06; }
+      50%       { opacity: 0.09; }
     }
 
     /* ─── Layout ─────────────────────────────────────────────── */
@@ -102,11 +110,19 @@
     /* ─── Brand ──────────────────────────────────────────────── */
     .brand {
       width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       font-size: 13px;
       font-weight: 400;
       color: var(--color-text-secondary);
-      text-align: center;
       letter-spacing: 0.01em;
+      flex-shrink: 0;
+    }
+    .brand-mark {
+      height: 28px;
+      width: auto;
       flex-shrink: 0;
     }
 
@@ -187,7 +203,7 @@
       height: 32px;
     }
     .icon-play, .icon-pause {
-      transition: opacity 100ms ease;
+      transition: opacity 140ms ease-out;
     }
 
     /* ─── Volume slider ──────────────────────────────────────── */
@@ -262,7 +278,7 @@
         margin: 0 auto;
       }
       .brand {
-        text-align: left;
+        justify-content: flex-start;
       }
       .play-btn {
         width: 120px;
@@ -280,10 +296,28 @@
 </head>
 <body>
 
-  <div class="bg-glow" id="bgGlow" aria-hidden="true"></div>
+  <div class="bg-glow" id="bgGlow" aria-hidden="true">
+    <div class="bg-glow-layer" id="bgGlowA"></div>
+    <div class="bg-glow-layer" id="bgGlowB"></div>
+  </div>
 
   <div class="layout">
-    <header class="brand" aria-label="noise.dog">noise.dog</header>
+    <header class="brand" aria-label="noise.dog">
+      <svg class="brand-mark" viewBox="0 0 1000 1000" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="
+          M 490,155 L 565,155 L 565,370 L 680,370
+          Q 750,370 800,400 Q 870,430 880,480 Q 890,540 850,560 Q 820,575 790,565
+          L 790,900 L 710,900 L 710,565
+          L 640,565 L 640,900 L 560,900 L 560,565
+          L 490,565 L 490,900 L 410,900 L 410,565
+          L 340,565 Q 280,560 240,520 Q 180,470 180,400
+          Q 180,330 230,290 Q 270,255 340,250 L 415,250 L 415,155 Z
+          M 260,315 Q 240,350 250,390 Q 270,430 320,440 L 340,440 L 340,300
+          Q 300,295 260,315 Z
+        "/>
+      </svg>
+      <span>noise.dog</span>
+    </header>
 
     <div class="spacer"></div>
 
@@ -394,6 +428,37 @@
       noiseNode.start();
     }
 
+    function startNoiseCrossfade() {
+      if (!ctx) { startNoise(); return; }
+      const preset = PRESETS[currentPresetIndex];
+      const newNode = createNoiseNode(preset.audio);
+      const currentVolume = gainNode.gain.value;
+      const now = ctx.currentTime;
+      const FADE = 0.15; // 150ms ramp down/up
+
+      // Ramp current gain down
+      gainNode.gain.cancelScheduledValues(now);
+      gainNode.gain.setValueAtTime(currentVolume, now);
+      gainNode.gain.linearRampToValueAtTime(0, now + FADE);
+
+      setTimeout(() => {
+        // Swap node at silence
+        if (noiseNode) {
+          noiseNode.stop();
+          noiseNode.disconnect();
+        }
+        noiseNode = newNode;
+        noiseNode.connect(gainNode);
+        noiseNode.start();
+
+        // Ramp back up
+        const t = ctx.currentTime;
+        gainNode.gain.cancelScheduledValues(t);
+        gainNode.gain.setValueAtTime(0, t);
+        gainNode.gain.linearRampToValueAtTime(currentVolume, t + FADE);
+      }, FADE * 1000);
+    }
+
     function stopNoise() {
       if (noiseNode) {
         noiseNode.stop();
@@ -403,12 +468,22 @@
     }
 
     // ─── Glow system ──────────────────────────────────────────
-    const bgGlow = document.getElementById('bgGlow');
+    // Two-layer crossfade: layerA and layerB alternate as active/incoming.
+    // The parent .bg-glow controls overall opacity (play/pause, breathing anim).
+    const bgGlow  = document.getElementById('bgGlow');
+    const glowLayerA = document.getElementById('bgGlowA');
+    const glowLayerB = document.getElementById('bgGlowB');
+    let activeGlowLayer = glowLayerA; // starts as active
+
+    function glowGradient(color) {
+      return `radial-gradient(ellipse at center, rgba(${color}, 1) 0%, transparent 70%)`;
+    }
 
     function showGlow() {
       const preset = PRESETS[currentPresetIndex];
-      bgGlow.style.background = `radial-gradient(ellipse at center, rgba(${preset.glowColor}, 0.08) 0%, transparent 70%)`;
-      // Fade in over 2.5s, then breathing animation takes over
+      activeGlowLayer.style.background = glowGradient(preset.glowColor);
+      activeGlowLayer.style.opacity = '1';
+      // Fade parent in over 2.5s, then breathing animation takes over
       bgGlow.style.transition = 'opacity 2.5s ease';
       bgGlow.style.opacity = '1';
       bgGlow.classList.add('playing');
@@ -421,14 +496,12 @@
     }
 
     function updateGlowColor(glowColor) {
-      // Smooth color crossfade over 800ms
-      const currentOpacity = parseFloat(bgGlow.style.opacity) || 0;
-      bgGlow.style.transition = 'none';
-      bgGlow.style.background = `radial-gradient(ellipse at center, rgba(${glowColor}, 0.08) 0%, transparent 70%)`;
-      // Restore transition after background update
-      requestAnimationFrame(() => {
-        bgGlow.style.transition = 'opacity 1.5s ease';
-      });
+      // 800ms crossfade: fade in the inactive layer with new color, fade out active
+      const incomingLayer = activeGlowLayer === glowLayerA ? glowLayerB : glowLayerA;
+      incomingLayer.style.background = glowGradient(glowColor);
+      incomingLayer.style.opacity = '1';       // fade in (800ms via CSS transition)
+      activeGlowLayer.style.opacity = '0';     // fade out (800ms via CSS transition)
+      activeGlowLayer = incomingLayer;
     }
 
     // ─── Play icon morph ──────────────────────────────────────
@@ -436,6 +509,7 @@
     const iconPause = document.getElementById('iconPause');
 
     function updatePlayIcon(playing) {
+      // Total morph: 140ms exit fade + 140ms enter fade ≈ 280ms spec
       if (playing) {
         iconPlay.style.opacity = '0';
         setTimeout(() => {
@@ -443,7 +517,7 @@
           iconPause.style.display = 'block';
           iconPause.style.opacity = '0';
           requestAnimationFrame(() => { iconPause.style.opacity = '1'; });
-        }, 100);
+        }, 140);
       } else {
         iconPause.style.opacity = '0';
         setTimeout(() => {
@@ -451,7 +525,7 @@
           iconPlay.style.display = 'block';
           iconPlay.style.opacity = '0';
           requestAnimationFrame(() => { iconPlay.style.opacity = '1'; });
-        }, 100);
+        }, 140);
       }
     }
 
@@ -511,11 +585,10 @@
       // Update preset name with transition
       transitionPresetName(preset.name);
 
-      // Update glow color if playing
+      // Update glow color and audio if playing
       if (isPlaying) {
         updateGlowColor(preset.glowColor);
-        // Restart noise with new preset audio type
-        startNoise();
+        startNoiseCrossfade();
       }
 
       // Update URL
