@@ -687,12 +687,27 @@
         startPresetCrossfade();
       }
 
+      // Persist preset
+      storageSave(STORAGE_PRESET, preset.slug);
+
       // Update URL
       if (!skipUrlUpdate) {
         const url = new URL(window.location.href);
         url.searchParams.set('preset', preset.slug);
         history.replaceState(null, '', url.toString());
       }
+    }
+
+    // ─── Persistence ──────────────────────────────────────────
+    const STORAGE_PRESET = 'nd_preset';
+    const STORAGE_VOLUME = 'nd_volume';
+
+    function storageSave(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) { /* private browsing / quota — ignore */ }
+    }
+
+    function storageGet(key) {
+      try { return localStorage.getItem(key); } catch (e) { return null; }
     }
 
     // ─── Volume ───────────────────────────────────────────────
@@ -706,7 +721,9 @@
     }
 
     volumeSlider.addEventListener('input', (e) => {
-      setVolume(parseInt(e.target.value, 10));
+      const val = parseInt(e.target.value, 10);
+      setVolume(val);
+      storageSave(STORAGE_VOLUME, val);
     });
 
     // ─── Build preset buttons ─────────────────────────────────
@@ -744,10 +761,11 @@
       }
     });
 
-    // ─── Init from URL ────────────────────────────────────────
+    // ─── Init from URL / localStorage ────────────────────────
     (function initFromUrl() {
       const params = new URLSearchParams(window.location.search);
-      const slug = params.get('preset');
+      // URL param takes priority; fall back to localStorage
+      const slug = params.get('preset') || storageGet(STORAGE_PRESET);
       if (slug) {
         const idx = PRESETS.findIndex(p => p.slug === slug);
         if (idx > 0) {
@@ -760,8 +778,12 @@
           presetNameEl.textContent = PRESETS[idx].name;
         }
       }
-      // Set initial volume track fill
-      setVolume(50);
+
+      // Restore saved volume (default 50)
+      const savedVolume = parseInt(storageGet(STORAGE_VOLUME), 10);
+      const initialVolume = (!isNaN(savedVolume) && savedVolume >= 0 && savedVolume <= 100) ? savedVolume : 50;
+      volumeSlider.value = initialVolume;
+      setVolume(initialVolume);
     })();
   </script>
 </body>
