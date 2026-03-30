@@ -283,78 +283,32 @@
       transform: scale(1.2);
     }
 
-    /* ─── Shortcuts button ───────────────────────────────────── */
-    .shortcuts-btn {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      background: transparent;
-      color: var(--color-text-secondary);
-      font-size: 13px;
-      border: none;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 4px;
-      transition: color 150ms ease;
-      z-index: 10;
-      line-height: 1;
+    /* ─── Footer ─────────────────────────────────────────────── */
+    .site-footer {
+      flex-shrink: 0;
+      padding-top: 16px;
     }
-    .shortcuts-btn:hover {
-      color: var(--color-text-primary);
-    }
-
-    /* ─── Shortcuts panel ────────────────────────────────────── */
-    .shortcuts-panel {
-      position: fixed;
-      bottom: 52px;
-      right: 16px;
-      background: var(--color-surface);
-      border: 1px solid rgba(156, 143, 132, 0.15);
-      border-radius: 8px;
-      padding: 16px 20px;
-      z-index: 10;
-      min-width: 220px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-      opacity: 0;
-      transform: translateY(6px);
-      pointer-events: none;
-      transition: opacity 150ms ease, transform 150ms ease;
-    }
-    .shortcuts-panel.visible {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-    .shortcuts-panel-title {
+    .site-footer-link {
       font-size: 11px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      font-weight: 400;
       color: var(--color-text-secondary);
-      margin-bottom: 12px;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      opacity: 0.5;
+      transition: opacity 200ms ease;
     }
-    .shortcuts-list {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 6px 16px;
-      align-items: center;
-    }
-    .shortcut-key {
-      font-size: 12px;
-      color: var(--color-accent);
-      font-weight: 500;
-      white-space: nowrap;
-    }
-    .shortcut-desc {
-      font-size: 12px;
-      color: var(--color-text-secondary);
+    .site-footer-link:hover {
+      opacity: 1;
     }
 
     /* ─── Desktop ────────────────────────────────────────────── */
     @media (min-width: 900px) {
       .layout {
-        max-width: 560px;
+        max-width: 480px;
         margin: 0 auto;
+      }
+      .brand {
+        justify-content: flex-start;
       }
       .play-btn {
         width: 120px;
@@ -365,7 +319,7 @@
         height: 40px;
       }
       .volume-label {
-        width: 400px;
+        width: 320px;
       }
     }
   </style>
@@ -380,17 +334,26 @@
   <div class="layout">
     <header class="brand" aria-label="noise.dog">
       <svg class="brand-mark" viewBox="0 0 1000 1000" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="
-          M 490,155 L 565,155 L 565,370 L 680,370
-          Q 750,370 800,400 Q 870,430 880,480 Q 890,540 850,560 Q 820,575 790,565
-          L 790,900 L 710,900 L 710,565
-          L 640,565 L 640,900 L 560,900 L 560,565
-          L 490,565 L 490,900 L 410,900 L 410,565
-          L 340,565 Q 280,560 240,520 Q 180,470 180,400
-          Q 180,330 230,290 Q 270,255 340,250 L 415,250 L 415,155 Z
-          M 260,315 Q 240,350 250,390 Q 270,430 320,440 L 340,440 L 340,300
-          Q 300,295 260,315 Z
-        "/>
+        <defs>
+          <mask id="legcuts">
+            <rect width="1000" height="1000" fill="white"/>
+            <rect x="424" y="468" width="58" height="435" fill="black"/>
+            <rect x="561" y="468" width="77" height="435" fill="black"/>
+            <rect x="717" y="468" width="57" height="435" fill="black"/>
+          </mask>
+        </defs>
+        <g mask="url(#legcuts)">
+          <rect x="185" y="130" width="82" height="220" rx="22"/>
+          <rect x="322" y="130" width="82" height="220" rx="22"/>
+          <ellipse cx="365" cy="418" rx="278" ry="155"/>
+          <ellipse cx="108" cy="445" rx="88" ry="68"/>
+          <rect x="345" y="372" width="498" height="170" rx="58"/>
+          <ellipse cx="870" cy="398" rx="76" ry="98"/>
+          <rect x="345" y="468" width="79" height="435" rx="20"/>
+          <rect x="482" y="468" width="79" height="435" rx="20"/>
+          <rect x="638" y="468" width="79" height="435" rx="20"/>
+          <rect x="774" y="468" width="79" height="435" rx="20"/>
+        </g>
       </svg>
       <h1 class="brand-title">noise.dog</h1>
     </header>
@@ -437,36 +400,10 @@
     </label>
 
     <div class="spacer"></div>
-  </div>
 
-  <!-- Keyboard shortcuts button -->
-  <button
-    class="shortcuts-btn"
-    id="shortcutsBtn"
-    type="button"
-    aria-label="Keyboard shortcuts"
-    aria-expanded="false"
-  >?</button>
-
-  <!-- Keyboard shortcuts panel -->
-  <div
-    class="shortcuts-panel"
-    id="shortcutsPanel"
-    role="dialog"
-    aria-label="Keyboard shortcuts"
-    aria-hidden="true"
-  >
-    <p class="shortcuts-panel-title">Shortcuts</p>
-    <div class="shortcuts-list">
-      <span class="shortcut-key">Space</span>
-      <span class="shortcut-desc">Play / pause</span>
-      <span class="shortcut-key">← →</span>
-      <span class="shortcut-desc">Cycle presets</span>
-      <span class="shortcut-key">↑ ↓</span>
-      <span class="shortcut-desc">Volume up / down</span>
-      <span class="shortcut-key">?</span>
-      <span class="shortcut-desc">Toggle this panel</span>
-    </div>
+    <footer class="site-footer" aria-label="Site info">
+      <a href="https://fancyma.tt" class="site-footer-link" target="_blank" rel="noopener noreferrer">fancyma.tt</a>
+    </footer>
   </div>
 
   <script>
@@ -692,7 +629,11 @@
     }
 
     function hideGlow() {
+      const currentOpacity = getComputedStyle(bgGlow).opacity;
       bgGlow.classList.remove('playing');
+      bgGlow.style.transition = 'none';
+      bgGlow.style.opacity = currentOpacity;
+      void bgGlow.offsetWidth;
       bgGlow.style.transition = 'opacity 1.5s ease';
       bgGlow.style.opacity = '0';
     }
@@ -809,21 +750,9 @@
     // ─── Volume ───────────────────────────────────────────────
     const volumeSlider = document.getElementById('volume');
 
-    function updateVolumeUrl(val) {
-      const url = new URL(window.location.href);
-      if (val === 50) {
-        url.searchParams.delete('v');
-      } else {
-        url.searchParams.set('v', val);
-      }
-      history.replaceState(null, '', url.toString());
-    }
-
-    function setVolume(val, skipUrlUpdate) {
+    function setVolume(val) {
       if (gainNode) gainNode.gain.value = val / 100;
       document.documentElement.style.setProperty('--vol-pct', val + '%');
-      volumeSlider.value = val;
-      if (!skipUrlUpdate) updateVolumeUrl(val);
     }
 
     volumeSlider.addEventListener('input', (e) => {
@@ -847,52 +776,8 @@
     // ─── Play button ──────────────────────────────────────────
     playBtn.addEventListener('click', togglePlay);
 
-    // ─── Shortcuts panel ──────────────────────────────────────
-    const shortcutsBtn   = document.getElementById('shortcutsBtn');
-    const shortcutsPanel = document.getElementById('shortcutsPanel');
-    let shortcutsVisible = false;
-
-    function showShortcuts() {
-      shortcutsVisible = true;
-      shortcutsPanel.classList.add('visible');
-      shortcutsPanel.setAttribute('aria-hidden', 'false');
-      shortcutsBtn.setAttribute('aria-expanded', 'true');
-    }
-
-    function hideShortcuts() {
-      shortcutsVisible = false;
-      shortcutsPanel.classList.remove('visible');
-      shortcutsPanel.setAttribute('aria-hidden', 'true');
-      shortcutsBtn.setAttribute('aria-expanded', 'false');
-    }
-
-    function toggleShortcuts() {
-      shortcutsVisible ? hideShortcuts() : showShortcuts();
-    }
-
-    shortcutsBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleShortcuts();
-    });
-
-    // Close on outside click
-    document.addEventListener('click', (e) => {
-      if (shortcutsVisible && !shortcutsPanel.contains(e.target) && e.target !== shortcutsBtn) {
-        hideShortcuts();
-      }
-    });
-
     // ─── Keyboard shortcuts ───────────────────────────────────
     document.addEventListener('keydown', (e) => {
-      // Escape closes shortcuts panel from anywhere
-      if (e.code === 'Escape') {
-        if (shortcutsVisible) {
-          hideShortcuts();
-          shortcutsBtn.focus();
-        }
-        return;
-      }
-
       if (e.target !== document.body && e.target !== document.documentElement) return;
 
       if (e.code === 'Space') {
@@ -904,14 +789,6 @@
       } else if (e.code === 'ArrowRight') {
         e.preventDefault();
         selectPreset((currentPresetIndex + 1) % PRESETS.length);
-      } else if (e.code === 'ArrowUp') {
-        e.preventDefault();
-        setVolume(Math.min(100, parseInt(volumeSlider.value, 10) + 5));
-      } else if (e.code === 'ArrowDown') {
-        e.preventDefault();
-        setVolume(Math.max(0, parseInt(volumeSlider.value, 10) - 5));
-      } else if (e.key === '?') {
-        toggleShortcuts();
       }
     });
 
@@ -943,9 +820,7 @@
         syncPresetButtons(currentPresetIndex);
       }
 
-      const volParam = params.get('v');
-      const initVol = volParam !== null ? Math.max(0, Math.min(100, parseInt(volParam, 10))) : 50;
-      setVolume(initVol, true);
+      setVolume(50);
     })();
   </script>
 </body>
