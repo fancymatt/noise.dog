@@ -157,19 +157,6 @@
       font-weight: 400;
     }
 
-    /* ─── Preset description ─────────────────────────────────── */
-    .preset-desc {
-      font-size: 13px;
-      font-weight: 300;
-      color: var(--color-text-secondary);
-      text-align: center;
-      line-height: 1.5;
-      letter-spacing: 0.01em;
-      max-width: 280px;
-      margin: 6px auto 0;
-      transition: opacity 200ms ease, transform 200ms ease;
-    }
-
     /* ─── Preset selector ────────────────────────────────────── */
     .preset-selector {
       display: flex;
@@ -399,7 +386,6 @@
     <div class="spacer"></div>
 
     <p class="preset-name" id="presetName" aria-live="polite">Deep Focus</p>
-    <p class="preset-desc" id="presetDesc">everything else falls away, and so do you</p>
     <div class="spacer-sm"></div>
     <div class="preset-selector" role="group" aria-label="Sound presets" id="presetSelector"></div>
 
@@ -739,7 +725,6 @@
     // ─── Toggle play ──────────────────────────────────────────
     const playBtn     = document.getElementById('playBtn');
     const presetNameEl = document.getElementById('presetName');
-    const presetDescEl = document.getElementById('presetDesc');
 
     function togglePlay() {
       isPlaying = !isPlaying;
@@ -758,25 +743,18 @@
       }
     }
 
-    // ─── Preset name + desc transition ────────────────────────
-    function transitionPresetName(newName, newDesc) {
+    // ─── Preset name transition ───────────────────────────────
+    function transitionPresetName(newName) {
       presetNameEl.style.transition = 'opacity 200ms ease, transform 200ms ease';
-      presetDescEl.style.transition = 'opacity 200ms ease, transform 200ms ease';
       presetNameEl.style.opacity = '0';
       presetNameEl.style.transform = 'translateY(-4px)';
-      presetDescEl.style.opacity = '0';
-      presetDescEl.style.transform = 'translateY(-4px)';
 
       setTimeout(() => {
         presetNameEl.textContent = newName;
-        if (newDesc !== undefined) presetDescEl.textContent = newDesc;
         presetNameEl.style.transform = 'translateY(4px)';
-        presetDescEl.style.transform = 'translateY(4px)';
         requestAnimationFrame(() => {
           presetNameEl.style.opacity = '1';
           presetNameEl.style.transform = 'translateY(0)';
-          presetDescEl.style.opacity = '1';
-          presetDescEl.style.transform = 'translateY(0)';
         });
       }, 100);
     }
@@ -808,8 +786,8 @@
       // Update capsule active states
       syncPresetButtons(index);
 
-      // Animate preset name + desc
-      transitionPresetName(preset.name, preset.desc);
+      // Animate preset name
+      transitionPresetName(preset.name);
 
       // Audio + glow if playing
       if (isPlaying) {
@@ -946,7 +924,6 @@
         currentPresetIndex = idx;
         syncPresetButtons(idx);
         presetNameEl.textContent = PRESETS[idx].name;
-        presetDescEl.textContent = PRESETS[idx].desc;
         if (shortParam !== PRESETS[idx].param || legacySlug) {
           updatePresetUrl(idx);
         }
@@ -963,5 +940,7 @@
       setVolume(initVol, true);
     })();
   </script>
+
+  <script data-goatcounter="https://fancymatt.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
