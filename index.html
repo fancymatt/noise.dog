@@ -786,6 +786,12 @@
       } else if (e.code === 'ArrowRight') {
         e.preventDefault();
         selectPreset((currentPresetIndex + 1) % PRESETS.length);
+      } else if (e.code === 'ArrowUp') {
+        e.preventDefault();
+        setVolume(Math.min(100, parseInt(volumeSlider.value, 10) + 5));
+      } else if (e.code === 'ArrowDown') {
+        e.preventDefault();
+        setVolume(Math.max(0, parseInt(volumeSlider.value, 10) - 5));
       }
     });
 
