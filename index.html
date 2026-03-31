@@ -30,10 +30,10 @@
       --color-surface:          #292421;
       --color-text-primary:     #e8e0d8;
       --color-text-secondary:   #9c8f84;
-      --color-accent:           #C8842A;
+      --color-accent:           #c8a96e;
       --color-preset-active-text:   #1c1917;
       --color-preset-inactive-text: #9c8f84;
-      --glow-color:             200, 132, 42;
+      --glow-color:             200, 169, 110;
       --vol-pct:                50%;
     }
 
@@ -121,7 +121,7 @@
       gap: 8px;
       font-size: 13px;
       font-weight: 400;
-      color: #C8842A;
+      color: var(--color-text-secondary);
       letter-spacing: 0.01em;
       flex-shrink: 0;
     }
@@ -180,7 +180,7 @@
       -webkit-tap-highlight-color: transparent;
     }
     .preset-btn:hover {
-      background: rgba(200, 132, 42, 0.08);
+      background: rgba(200, 169, 110, 0.08);
       color: var(--color-text-primary);
     }
     .preset-btn.active {
@@ -469,7 +469,7 @@
         name: "Deep Focus",
         slug: "deep-focus",
         param: "df",
-        glowColor: "200, 132, 42",
+        glowColor: "200, 169, 110",
         layers: [
           { source: "brown", filters: [{ type: "lowpass",  freq: 800,  Q: 0.7 }], gain: 0.8, pan:  0 },
           { source: "brown", filters: [{ type: "bandpass", freq: 250,  Q: 0.5 }], gain: 0.3, pan:  0 },
