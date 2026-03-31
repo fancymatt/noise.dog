@@ -774,26 +774,28 @@
     playBtn.addEventListener('click', () => { togglePlay(); playBtn.blur(); });
 
     // ─── Keyboard shortcuts ───────────────────────────────────
+    const HANDLED_KEYS = new Set(['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
+
     document.addEventListener('keydown', (e) => {
+      if (!HANDLED_KEYS.has(e.code)) return;
+
       // Block shortcuts only when focus is in a real text input (not buttons/sliders)
       const tag = e.target.tagName;
       if (tag === 'INPUT' && e.target.type === 'text') return;
       if (tag === 'TEXTAREA' || tag === 'SELECT') return;
 
+      // Prevent browser defaults (scroll, etc.) early — before branch logic
+      e.preventDefault();
+
       if (e.code === 'Space') {
-        e.preventDefault();
         togglePlay();
       } else if (e.code === 'ArrowLeft') {
-        e.preventDefault();
         selectPreset((currentPresetIndex - 1 + PRESETS.length) % PRESETS.length);
       } else if (e.code === 'ArrowRight') {
-        e.preventDefault();
         selectPreset((currentPresetIndex + 1) % PRESETS.length);
       } else if (e.code === 'ArrowUp') {
-        e.preventDefault();
         setVolume(Math.min(100, parseInt(volumeSlider.value, 10) + 5));
       } else if (e.code === 'ArrowDown') {
-        e.preventDefault();
         setVolume(Math.max(0, parseInt(volumeSlider.value, 10) - 5));
       }
     });
