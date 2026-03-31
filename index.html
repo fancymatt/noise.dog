@@ -766,12 +766,12 @@
       btn.textContent = preset.name;
       btn.setAttribute('aria-pressed', String(i === 0));
       btn.setAttribute('aria-label', preset.name);
-      btn.addEventListener('click', () => selectPreset(i));
+      btn.addEventListener('click', () => { selectPreset(i); btn.blur(); });
       presetSelector.appendChild(btn);
     });
 
     // ─── Play button ──────────────────────────────────────────
-    playBtn.addEventListener('click', togglePlay);
+    playBtn.addEventListener('click', () => { togglePlay(); playBtn.blur(); });
 
     // ─── Keyboard shortcuts ───────────────────────────────────
     document.addEventListener('keydown', (e) => {
