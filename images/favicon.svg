@@ -1,18 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
-  <title>noise.dog</title>
-  <g fill="#e8e0d8">
-    <rect x="185" y="145" width="79" height="215" rx="20"/>
-    <rect x="322" y="145" width="79" height="215" rx="20"/>
-    <ellipse cx="360" cy="420" rx="270" ry="150"/>
-    <ellipse cx="115" cy="445" rx="85" ry="65"/>
-    <rect x="340" y="375" width="490" height="165" rx="55"/>
-    <ellipse cx="862" cy="400" rx="72" ry="95"/>
-    <rect x="342" y="468" width="79" height="432"/>
-    <rect x="479" y="468" width="79" height="432"/>
-    <rect x="635" y="468" width="79" height="432"/>
-    <rect x="771" y="468" width="79" height="432"/>
-  </g>
-  <rect x="421" y="468" width="58" height="432" fill="#1c1917"/>
-  <rect x="558" y="468" width="77" height="432" fill="#1c1917"/>
-  <rect x="714" y="468" width="57" height="432" fill="#1c1917"/>
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- Tail: C-curve — base at rump, sweeps left/up, tip curls over back -->
+  <path d="M 16.5,47.2 C 5,28.5 12.8,8.2 37.5,20.0" stroke="#e8e0d8" stroke-width="6.4" stroke-linecap="round" fill="none"/>
+  <!-- Body + Head: unified angular silhouette, dog facing right -->
+  <path d="M 15.2,46.2 L 65.8,39.0 L 67.2,30.4 L 69.8,26.4 L 72.0,26.4 L 74.8,8.6 L 77.6,26.4 L 80.2,26.4 L 83.0,8.4 L 85.8,26.4 L 88.4,29.0 L 92.4,32.6 L 94.8,32.6 L 99.4,35.8 L 99.4,39.6 L 99.4,42.8 L 96.8,45.6 L 94.0,47.0 L 88.2,46.8 L 84.2,50.0 L 79.2,54.0 L 74.8,57.6 L 70.6,60.8 L 66.6,63.0 Q 42.0,66.4 15.2,64.0 Z" fill="#e8e0d8"/>
+  <!-- Rear legs -->
+  <rect x="14.8" y="63.6" width="7.0" height="25.4" fill="#e8e0d8"/>
+  <rect x="27.8" y="63.6" width="7.0" height="25.4" fill="#e8e0d8"/>
+  <!-- Front legs -->
+  <rect x="57.2" y="62.8" width="7.0" height="26.2" fill="#e8e0d8"/>
+  <rect x="68.8" y="61.2" width="7.0" height="27.8" fill="#e8e0d8"/>
 </svg>
