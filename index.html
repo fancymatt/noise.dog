@@ -165,6 +165,12 @@
       gap: 8px;
     }
 
+    /* ─── Preset chip wrapper ────────────────────────────────── */
+    .preset-chip-wrap {
+      position: relative;
+      display: inline-flex;
+    }
+
     .preset-btn {
       padding: 8px 16px;
       border-radius: 20px;
@@ -188,6 +194,71 @@
       color: var(--color-preset-active-text);
     }
     .preset-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* ─── Custom preset chip ─────────────────────────────────── */
+    .preset-btn.custom-preset .preset-custom-glyph {
+      color: var(--color-accent);
+      margin-right: 4px;
+      font-size: 9px;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .preset-btn.custom-preset.active .preset-custom-glyph {
+      color: var(--color-preset-active-text);
+    }
+
+    /* ─── Customize icon ─────────────────────────────────────── */
+    .preset-customize-btn {
+      position: absolute;
+      top: -7px;
+      right: -7px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-surface);
+      border: 1.5px solid var(--color-accent);
+      color: var(--color-accent);
+      font-size: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 300ms ease;
+      z-index: 2;
+      line-height: 1;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .preset-customize-btn.visible {
+      opacity: 1;
+    }
+    @media (hover: hover) {
+      .preset-chip-wrap:hover .preset-customize-btn {
+        opacity: 1;
+      }
+    }
+
+    /* ─── Add preset chip ("+" ghost) ────────────────────────── */
+    .preset-btn-add {
+      opacity: 0.45;
+      border: 1.5px dashed var(--color-accent) !important;
+      color: var(--color-accent) !important;
+      font-size: 18px !important;
+      font-weight: 300 !important;
+      padding: 4px 14px !important;
+      letter-spacing: 0 !important;
+      text-transform: none !important;
+      line-height: 1.3;
+      transition: opacity 150ms ease, background 150ms ease !important;
+    }
+    .preset-btn-add:hover {
+      opacity: 0.85 !important;
+      background: rgba(200, 169, 110, 0.08) !important;
+    }
+    .preset-btn-add:active {
       transform: scale(0.96);
     }
 
@@ -368,6 +439,563 @@
         width: 400px;
       }
     }
+
+    /* ═══════════════════════════════════════════════════════════
+       CONFIGURATOR STYLES
+    ═══════════════════════════════════════════════════════════ */
+
+    /* ─── Overlay ────────────────────────────────────────────── */
+    .cfg-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 250ms ease;
+    }
+    .cfg-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ─── Drawer ─────────────────────────────────────────────── */
+    .cfg-drawer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--color-surface);
+      border-top: 1px solid rgba(156, 143, 132, 0.15);
+      border-radius: 16px 16px 0 0;
+      z-index: 51;
+      max-height: 88dvh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      transform: translateY(100%);
+      transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+      -webkit-overflow-scrolling: touch;
+    }
+    .cfg-drawer.open {
+      transform: translateY(0);
+    }
+
+    @media (min-width: 900px) {
+      .cfg-drawer {
+        max-width: 560px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%) translateY(100%);
+        border-radius: 16px 16px 0 0;
+      }
+      .cfg-drawer.open {
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    /* ─── Drag handle ────────────────────────────────────────── */
+    .cfg-drag-handle {
+      width: 36px;
+      height: 4px;
+      background: rgba(156, 143, 132, 0.25);
+      border-radius: 2px;
+      margin: 12px auto 0;
+      flex-shrink: 0;
+    }
+
+    /* ─── Header ─────────────────────────────────────────────── */
+    .cfg-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px 8px;
+    }
+    .cfg-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--color-text-primary);
+      letter-spacing: -0.01em;
+    }
+    .cfg-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--color-text-secondary);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 6px;
+      line-height: 1;
+      transition: color 150ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cfg-close-btn:hover {
+      color: var(--color-text-primary);
+    }
+
+    /* ─── Body ───────────────────────────────────────────────── */
+    .cfg-body {
+      padding: 4px 0 0;
+    }
+
+    /* ─── Section ────────────────────────────────────────────── */
+    .cfg-section {
+      padding: 12px 20px;
+    }
+    .cfg-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-secondary);
+      margin-bottom: 10px;
+    }
+
+    /* ─── Master volume row ──────────────────────────────────── */
+    .cfg-vol-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cfg-vol-row-label {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      min-width: 52px;
+      flex-shrink: 0;
+    }
+    .cfg-vol-value {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      min-width: 36px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ─── Divider ────────────────────────────────────────────── */
+    .cfg-divider {
+      height: 1px;
+      background: rgba(156, 143, 132, 0.1);
+      margin: 0 20px;
+    }
+
+    /* ─── Layers ─────────────────────────────────────────────── */
+    .cfg-layers {
+      padding: 12px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .cfg-layers-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-secondary);
+      margin-bottom: 4px;
+    }
+
+    /* ─── Layer row ──────────────────────────────────────────── */
+    .cfg-layer-row {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(156, 143, 132, 0.08);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .cfg-layer-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .cfg-layer-num {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-secondary);
+      min-width: 40px;
+      flex-shrink: 0;
+    }
+    .cfg-layer-vol-wrap {
+      flex: 1;
+      min-width: 0;
+    }
+    .cfg-layer-chevron {
+      color: var(--color-text-secondary);
+      font-size: 11px;
+      transition: transform 200ms ease;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+    .cfg-layer-row.expanded .cfg-layer-chevron {
+      transform: rotate(180deg);
+    }
+    .cfg-layer-delete {
+      background: transparent;
+      border: none;
+      color: rgba(200, 100, 80, 0.5);
+      font-size: 14px;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      line-height: 1;
+      transition: color 150ms ease;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cfg-layer-delete:hover {
+      color: rgba(200, 100, 80, 0.9);
+    }
+
+    /* ─── Layer expanded content ─────────────────────────────── */
+    .cfg-layer-expanded {
+      display: none;
+      padding: 0 12px 12px;
+    }
+    .cfg-layer-row.expanded .cfg-layer-expanded {
+      display: block;
+    }
+
+    /* ─── Noise type pills ───────────────────────────────────── */
+    .cfg-noise-pills {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .cfg-noise-pill {
+      padding: 5px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(156, 143, 132, 0.25);
+      background: transparent;
+      color: var(--color-text-secondary);
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      cursor: pointer;
+      transition: background 130ms ease, color 130ms ease, border-color 130ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cfg-noise-pill.active {
+      background: var(--color-accent);
+      color: var(--color-preset-active-text);
+      border-color: var(--color-accent);
+    }
+    .cfg-noise-pill:hover:not(.active) {
+      border-color: rgba(200, 169, 110, 0.45);
+      color: var(--color-text-primary);
+    }
+
+    .cfg-advanced-link {
+      background: transparent;
+      border: none;
+      color: var(--color-accent);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 2px 0 6px;
+      display: block;
+      -webkit-tap-highlight-color: transparent;
+      opacity: 0.85;
+      transition: opacity 150ms ease;
+    }
+    .cfg-advanced-link:hover { opacity: 1; }
+    .cfg-layer-row.advanced .cfg-advanced-link::after {
+      content: ' ▴';
+    }
+    .cfg-advanced-link::after {
+      content: ' ›';
+    }
+
+    /* ─── Advanced controls ──────────────────────────────────── */
+    .cfg-advanced-controls {
+      display: none;
+      padding-top: 8px;
+      border-top: 1px solid rgba(156, 143, 132, 0.1);
+      margin-top: 4px;
+    }
+    .cfg-layer-row.advanced .cfg-advanced-controls {
+      display: block;
+    }
+
+    /* ─── Slider row ─────────────────────────────────────────── */
+    .cfg-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .cfg-slider-label {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      min-width: 64px;
+      flex-shrink: 0;
+    }
+    .cfg-slider-value {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      min-width: 48px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ─── Drawer sliders ─────────────────────────────────────── */
+    .cfg-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      flex: 1;
+      height: 36px;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      min-width: 0;
+    }
+    .cfg-slider::-webkit-slider-runnable-track {
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(156, 143, 132, 0.2);
+    }
+    .cfg-slider::-moz-range-track {
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(156, 143, 132, 0.2);
+    }
+    .cfg-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      margin-top: -5.5px;
+      transition: transform 100ms ease;
+    }
+    .cfg-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: none;
+      background: var(--color-accent);
+    }
+    .cfg-slider:active::-webkit-slider-thumb { transform: scale(1.2); }
+    .cfg-slider:active::-moz-range-thumb { transform: scale(1.2); }
+    .cfg-slider:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    /* ─── Add layer button ───────────────────────────────────── */
+    .cfg-add-layer-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px dashed rgba(200, 169, 110, 0.28);
+      border-radius: 8px;
+      color: var(--color-accent);
+      font-size: 12px;
+      font-weight: 400;
+      padding: 9px 12px;
+      cursor: pointer;
+      width: 100%;
+      transition: border-color 150ms ease, background 150ms ease, opacity 150ms ease;
+      -webkit-tap-highlight-color: transparent;
+      opacity: 0.7;
+    }
+    .cfg-add-layer-btn:hover {
+      border-color: rgba(200, 169, 110, 0.55);
+      background: rgba(200, 169, 110, 0.04);
+      opacity: 1;
+    }
+
+    /* ─── Footer ─────────────────────────────────────────────── */
+    .cfg-footer {
+      padding: 16px 20px 4px;
+      border-top: 1px solid rgba(156, 143, 132, 0.1);
+      margin-top: 8px;
+    }
+
+    /* ─── Discard confirm ────────────────────────────────────── */
+    .cfg-discard-confirm {
+      background: rgba(200, 90, 70, 0.09);
+      border: 1px solid rgba(200, 90, 70, 0.2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+    .cfg-discard-text {
+      font-size: 13px;
+      color: var(--color-text-primary);
+      margin-bottom: 10px;
+    }
+    .cfg-discard-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .cfg-keep-btn {
+      background: transparent;
+      border: 1px solid rgba(156, 143, 132, 0.3);
+      border-radius: 16px;
+      color: var(--color-text-primary);
+      font-size: 12px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: background 150ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cfg-keep-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .cfg-discard-btn-confirm {
+      background: rgba(200, 90, 70, 0.15);
+      border: 1px solid rgba(200, 90, 70, 0.3);
+      border-radius: 16px;
+      color: #e8907a;
+      font-size: 12px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: background 150ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cfg-discard-btn-confirm:hover {
+      background: rgba(200, 90, 70, 0.25);
+    }
+
+    /* ─── Save row ───────────────────────────────────────────── */
+    .cfg-footer-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .cfg-save-preset-btn {
+      flex: 1;
+      background: rgba(200, 169, 110, 0.12);
+      border: 1px solid rgba(200, 169, 110, 0.3);
+      border-radius: 20px;
+      color: var(--color-accent);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background 150ms ease, border-color 150ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cfg-save-preset-btn:hover {
+      background: rgba(200, 169, 110, 0.2);
+      border-color: rgba(200, 169, 110, 0.5);
+    }
+
+    /* ─── Save name input ────────────────────────────────────── */
+    .cfg-save-input-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cfg-save-input-label {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      font-weight: 500;
+    }
+    .cfg-save-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .cfg-name-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(156, 143, 132, 0.3);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: var(--color-text-primary);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 150ms ease;
+    }
+    .cfg-name-input:focus {
+      border-color: var(--color-accent);
+    }
+    .cfg-name-input::placeholder {
+      color: var(--color-text-secondary);
+      opacity: 0.5;
+    }
+    .cfg-confirm-save-btn {
+      background: var(--color-accent);
+      color: var(--color-preset-active-text);
+      border: none;
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 150ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cfg-confirm-save-btn:hover { opacity: 0.85; }
+    .cfg-cancel-save-btn {
+      background: transparent;
+      border: none;
+      color: var(--color-text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+      padding: 6px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cfg-cancel-save-btn:hover {
+      color: var(--color-text-primary);
+    }
+
+    /* ─── Context menu ───────────────────────────────────────── */
+    .cfg-context-menu {
+      position: fixed;
+      background: var(--color-surface);
+      border: 1px solid rgba(156, 143, 132, 0.2);
+      border-radius: 10px;
+      padding: 4px;
+      z-index: 60;
+      min-width: 130px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      opacity: 0;
+      transform: scale(0.92) translateY(-4px);
+      pointer-events: none;
+      transition: opacity 150ms ease, transform 150ms ease;
+      transform-origin: top center;
+    }
+    .cfg-context-menu.open {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+    .cfg-context-menu-item {
+      display: block;
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--color-text-primary);
+      font-size: 13px;
+      padding: 9px 14px;
+      text-align: left;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 100ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cfg-context-menu-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .cfg-context-menu-item.danger {
+      color: #e8907a;
+    }
+    .cfg-context-menu-item.danger:hover {
+      background: rgba(200, 90, 70, 0.1);
+    }
   </style>
 </head>
 <body>
@@ -457,14 +1085,41 @@
     </div>
   </div>
 
+  <!-- Configurator overlay -->
+  <div class="cfg-overlay" id="cfgOverlay" aria-hidden="true"></div>
+
+  <!-- Configurator drawer -->
+  <div
+    class="cfg-drawer"
+    id="cfgDrawer"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="cfgTitle"
+    aria-hidden="true"
+  >
+    <div class="cfg-drag-handle" aria-hidden="true"></div>
+    <div class="cfg-header">
+      <h2 class="cfg-title" id="cfgTitle">Custom Soundscape</h2>
+      <button class="cfg-close-btn" id="cfgCloseBtn" type="button" aria-label="Close configurator">✕</button>
+    </div>
+    <div class="cfg-body" id="cfgBody"></div>
+    <div class="cfg-footer" id="cfgFooter"></div>
+  </div>
+
+  <!-- Custom preset context menu -->
+  <div class="cfg-context-menu" id="cfgContextMenu" role="menu" aria-label="Preset options">
+    <button class="cfg-context-menu-item" id="cfgContextEdit" role="menuitem" type="button">Edit</button>
+    <button class="cfg-context-menu-item danger" id="cfgContextDelete" role="menuitem" type="button">Delete</button>
+  </div>
+
   <script>
     // ─── Preset definitions ───────────────────────────────────
     // Each preset has a layers array. Each layer:
-    //   source: "white" | "brown"
+    //   source: "white" | "brown" | "pink"
     //   filters: [{ type, freq, Q?, gain? }]  — chained BiquadFilters
     //   gain: 0–1  (layer volume, independent of master)
     //   pan: -1 to 1
-    const PRESETS = [
+    let PRESETS = [
       {
         name: "Deep Focus",
         desc: "everything else falls away, and so do you",
@@ -498,6 +1153,7 @@
         layers: [
           { source: "brown", filters: [{ type: "lowpass",  freq: 400,  Q: 0.6 }],                                              gain: 0.70, pan:  0   },
           { source: "white", filters: [{ type: "bandpass", freq: 3000, Q: 2.0 }, { type: "highpass", freq: 1500, Q: 0.5 }],   gain: 0.06, pan:  0.1 },
+          { source: "white", filters: [{ type: "bandpass", freq: 2500, Q: 2.5 }, { type: "highpass", freq: 1200, Q: 0.5 }],   gain: 0.04, pan: -0.2 },
           { source: "brown", filters: [{ type: "lowpass",  freq: 120,  Q: 1.0 }],                                              gain: 0.40, pan:  0   },
         ]
       },
@@ -537,7 +1193,7 @@
 
     // ─── Audio engine ─────────────────────────────────────────
     let ctx, gainNode;
-    let sharedBuffers = {};   // { white: AudioBuffer, brown: AudioBuffer }
+    let sharedBuffers = {};   // { white: AudioBuffer, brown: AudioBuffer, pink: AudioBuffer }
     let activeLayers  = [];   // [{ source, layerGain, panner, targetGain }]
 
     // Generate a raw AudioBuffer (not a source node) — called once at init.
@@ -565,9 +1221,29 @@
       return buffer;
     }
 
+    function generatePinkBuffer() {
+      const bufferSize = 2 * ctx.sampleRate;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886*b0 + white*0.0555179;
+        b1 = 0.99332*b1 + white*0.0750759;
+        b2 = 0.96900*b2 + white*0.1538520;
+        b3 = 0.86650*b3 + white*0.3104856;
+        b4 = 0.55000*b4 + white*0.5329522;
+        b5 = -0.7616*b5  - white*0.0168980;
+        data[i] = (b0+b1+b2+b3+b4+b5+b6+white*0.5362) * 0.11;
+        b6 = white * 0.115926;
+      }
+      return buffer;
+    }
+
     function initBuffers() {
       sharedBuffers.white = generateWhiteBuffer();
       sharedBuffers.brown = generateBrownBuffer();
+      sharedBuffers.pink  = generatePinkBuffer();
     }
 
     function createAudioContext() {
@@ -582,7 +1258,7 @@
     // startGain: if provided, layer gain starts here (used for crossfade — start new layers at 0).
     function createLayer(layerDef, startGain) {
       const source = ctx.createBufferSource();
-      source.buffer = sharedBuffers[layerDef.source];
+      source.buffer = sharedBuffers[layerDef.source] || sharedBuffers.brown;
       source.loop = true;
 
       let lastNode = source;
@@ -760,9 +1436,26 @@
     }
 
     function syncPresetButtons(index) {
-      document.querySelectorAll('.preset-btn').forEach((btn, i) => {
+      document.querySelectorAll('.preset-btn[data-preset-index]').forEach(btn => {
+        const i = parseInt(btn.dataset.presetIndex, 10);
         btn.classList.toggle('active', i === index);
         btn.setAttribute('aria-pressed', String(i === index));
+        // Show/hide customize icon after delay for active preset
+        const wrap = btn.closest('.preset-chip-wrap');
+        if (wrap) {
+          const customizeBtn = wrap.querySelector('.preset-customize-btn');
+          if (customizeBtn) {
+            if (i === index) {
+              clearTimeout(customizeBtn._showTimer);
+              customizeBtn._showTimer = setTimeout(() => {
+                customizeBtn.classList.add('visible');
+              }, 1500);
+            } else {
+              clearTimeout(customizeBtn._showTimer);
+              customizeBtn.classList.remove('visible');
+            }
+          }
+        }
       });
     }
 
@@ -795,8 +1488,8 @@
         crossfadeToPreset();
       }
 
-      // Update URL
-      if (!skipUrlUpdate) updatePresetUrl(index);
+      // Update URL (only for non-custom presets)
+      if (!skipUrlUpdate && !preset.custom) updatePresetUrl(index);
     }
 
     // ─── Volume ───────────────────────────────────────────────
@@ -826,16 +1519,76 @@
     // ─── Build preset buttons ─────────────────────────────────
     const presetSelector = document.getElementById('presetSelector');
 
-    PRESETS.forEach((preset, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'preset-btn' + (i === 0 ? ' active' : '');
-      btn.type = 'button';
-      btn.textContent = preset.name;
-      btn.setAttribute('aria-pressed', String(i === 0));
-      btn.setAttribute('aria-label', preset.name);
-      btn.addEventListener('click', () => selectPreset(i));
-      presetSelector.appendChild(btn);
-    });
+    function buildPresetButtons() {
+      presetSelector.innerHTML = '';
+      PRESETS.forEach((preset, i) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'preset-chip-wrap';
+
+        const btn = document.createElement('button');
+        btn.className = 'preset-btn' + (i === currentPresetIndex ? ' active' : '');
+        if (preset.custom) btn.classList.add('custom-preset');
+        btn.type = 'button';
+        btn.dataset.presetIndex = i;
+        btn.setAttribute('aria-pressed', String(i === currentPresetIndex));
+        btn.setAttribute('aria-label', preset.name);
+
+        if (preset.custom) {
+          const glyph = document.createElement('span');
+          glyph.className = 'preset-custom-glyph';
+          glyph.textContent = '✦';
+          glyph.setAttribute('aria-hidden', 'true');
+          btn.appendChild(glyph);
+          btn.appendChild(document.createTextNode(preset.name));
+
+          // Long-press for context menu
+          let longPressTimer;
+          btn.addEventListener('pointerdown', () => {
+            longPressTimer = setTimeout(() => {
+              showContextMenu(btn, i);
+            }, 400);
+          });
+          btn.addEventListener('pointerup', () => clearTimeout(longPressTimer));
+          btn.addEventListener('pointercancel', () => clearTimeout(longPressTimer));
+          btn.addEventListener('pointermove', () => clearTimeout(longPressTimer));
+        } else {
+          btn.textContent = preset.name;
+        }
+
+        btn.addEventListener('click', () => {
+          if (contextMenuOpen) { hideContextMenu(); return; }
+          selectPreset(i);
+        });
+
+        // Customize icon (only for non-add chips)
+        const customizeBtn = document.createElement('button');
+        customizeBtn.className = 'preset-customize-btn';
+        customizeBtn.type = 'button';
+        customizeBtn.setAttribute('aria-label', 'Customize ' + preset.name);
+        customizeBtn.title = 'Customize';
+        customizeBtn.innerHTML = '✎';
+        customizeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openConfigurator(i);
+        });
+        if (i === currentPresetIndex) {
+          customizeBtn._showTimer = setTimeout(() => customizeBtn.classList.add('visible'), 1500);
+        }
+
+        wrap.appendChild(btn);
+        wrap.appendChild(customizeBtn);
+        presetSelector.appendChild(wrap);
+      });
+
+      // Add "+" ghost chip
+      const addBtn = document.createElement('button');
+      addBtn.className = 'preset-btn preset-btn-add';
+      addBtn.type = 'button';
+      addBtn.setAttribute('aria-label', 'Create custom soundscape');
+      addBtn.textContent = '+';
+      addBtn.addEventListener('click', () => openConfigurator(null));
+      presetSelector.appendChild(addBtn);
+    }
 
     // ─── Play button ──────────────────────────────────────────
     playBtn.addEventListener('click', togglePlay);
@@ -877,8 +1630,12 @@
 
     // ─── Keyboard shortcuts ───────────────────────────────────
     document.addEventListener('keydown', (e) => {
-      // Escape closes shortcuts panel from anywhere
+      // Escape closes configurator or shortcuts panel
       if (e.code === 'Escape') {
+        if (cfgDrawerOpen) {
+          tryCloseConfigurator();
+          return;
+        }
         if (shortcutsVisible) {
           hideShortcuts();
           shortcutsBtn.focus();
@@ -907,8 +1664,748 @@
       }
     });
 
+    // ═══════════════════════════════════════════════════════════
+    // CONFIGURATOR
+    // ═══════════════════════════════════════════════════════════
+
+    const cfgOverlay   = document.getElementById('cfgOverlay');
+    const cfgDrawer    = document.getElementById('cfgDrawer');
+    const cfgBody      = document.getElementById('cfgBody');
+    const cfgFooter    = document.getElementById('cfgFooter');
+    const cfgCloseBtn  = document.getElementById('cfgCloseBtn');
+    const cfgContextMenu  = document.getElementById('cfgContextMenu');
+    const cfgContextEdit  = document.getElementById('cfgContextEdit');
+    const cfgContextDelete = document.getElementById('cfgContextDelete');
+
+    let cfgDrawerOpen   = false;
+    let cfgDirty        = false;       // unsaved changes flag
+    let cfgSourceIndex  = null;        // index in PRESETS we're editing from, or null for new
+    let cfgWorkingLayers = [];         // working copy: [{source, lowCut, highCut, pan, gain}]
+    let cfgMasterVol    = 50;
+    let cfgShowDiscard  = false;
+    let cfgSaveMode     = false;       // showing save name input
+    let cfgEditingPresetIndex = null;  // if editing an existing custom preset
+    let contextMenuOpen = false;
+    let contextMenuTargetIndex = null;
+
+    // Deep clone a layers array
+    function cloneLayer(l) {
+      return {
+        source: l.source || 'brown',
+        filters: (l.filters || []).map(f => Object.assign({}, f)),
+        gain: l.gain !== undefined ? l.gain : 0.5,
+        pan: l.pan !== undefined ? l.pan : 0,
+      };
+    }
+
+    // ─── localStorage ─────────────────────────────────────────
+    function loadCustomPresets() {
+      try {
+        const raw = localStorage.getItem('noise_custom_presets');
+        return raw ? JSON.parse(raw) : [];
+      } catch (_) { return []; }
+    }
+
+    function saveCustomPresets(customs) {
+      localStorage.setItem('noise_custom_presets', JSON.stringify(customs));
+    }
+
+    function getCustomPresets() {
+      return PRESETS.filter(p => p.custom);
+    }
+
+    function mergeCustomPresets() {
+      const customs = loadCustomPresets();
+      // Remove old custom presets from PRESETS array
+      PRESETS = PRESETS.filter(p => !p.custom);
+      // Append fresh ones
+      customs.forEach(cp => PRESETS.push(cp));
+    }
+
+    // ─── Open configurator ────────────────────────────────────
+    function openConfigurator(presetIndex) {
+      cfgSourceIndex = presetIndex;
+      cfgEditingPresetIndex = null;
+      cfgSaveMode = false;
+      cfgShowDiscard = false;
+
+      if (presetIndex !== null && PRESETS[presetIndex]) {
+        // Clone from existing preset
+        const preset = PRESETS[presetIndex];
+        cfgWorkingLayers = preset.layers.map(cloneLayer);
+        if (preset.custom) {
+          cfgEditingPresetIndex = presetIndex;
+        }
+      } else {
+        // Blank: single brown noise layer
+        cfgWorkingLayers = [{
+          source: 'brown',
+          filters: [],
+          gain: 0.5,
+          pan: 0,
+        }];
+      }
+
+      // Master vol from main slider
+      cfgMasterVol = parseInt(volumeSlider.value, 10);
+      cfgDirty = false;
+
+      renderCfgDrawer();
+      openDrawer();
+    }
+
+    function openDrawer() {
+      cfgDrawerOpen = true;
+      cfgOverlay.classList.add('open');
+      cfgOverlay.setAttribute('aria-hidden', 'false');
+      cfgDrawer.classList.add('open');
+      cfgDrawer.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+
+      // Focus trap: move focus to close button
+      setTimeout(() => cfgCloseBtn.focus(), 50);
+    }
+
+    function closeDrawer() {
+      cfgDrawerOpen = false;
+      cfgOverlay.classList.remove('open');
+      cfgOverlay.setAttribute('aria-hidden', 'true');
+      cfgDrawer.classList.remove('open');
+      cfgDrawer.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      cfgShowDiscard = false;
+      cfgSaveMode = false;
+    }
+
+    function tryCloseConfigurator() {
+      if (cfgDirty && !cfgShowDiscard) {
+        cfgShowDiscard = true;
+        renderCfgFooter();
+        return;
+      }
+      closeDrawer();
+    }
+
+    cfgCloseBtn.addEventListener('click', tryCloseConfigurator);
+    cfgOverlay.addEventListener('click', tryCloseConfigurator);
+
+    // Focus trap within drawer
+    cfgDrawer.addEventListener('keydown', (e) => {
+      if (e.code !== 'Tab') return;
+      const focusable = Array.from(cfgDrawer.querySelectorAll(
+        'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )).filter(el => el.offsetParent !== null);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last  = focusable[focusable.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+
+    // ─── Render helpers ───────────────────────────────────────
+    function makeSliderRow(labelText, min, max, value, step, ariaLabel, onInput, valueFormatter) {
+      const row = document.createElement('div');
+      row.className = 'cfg-slider-row';
+
+      const lbl = document.createElement('span');
+      lbl.className = 'cfg-slider-label';
+      lbl.textContent = labelText;
+      row.appendChild(lbl);
+
+      const slider = document.createElement('input');
+      slider.type = 'range';
+      slider.className = 'cfg-slider';
+      slider.min = min;
+      slider.max = max;
+      slider.value = value;
+      slider.step = step;
+      slider.setAttribute('aria-label', ariaLabel);
+
+      const valEl = document.createElement('span');
+      valEl.className = 'cfg-slider-value';
+      valEl.textContent = valueFormatter ? valueFormatter(value) : value;
+
+      slider.addEventListener('input', () => {
+        const v = parseFloat(slider.value);
+        valEl.textContent = valueFormatter ? valueFormatter(v) : v;
+        cfgDirty = true;
+        onInput(v, slider, valEl);
+      });
+
+      row.appendChild(slider);
+      row.appendChild(valEl);
+      return row;
+    }
+
+    // ─── Live audio: update single layer ─────────────────────
+    function applyLayerGain(layerIdx, gainVal) {
+      if (!isPlaying || !activeLayers[layerIdx]) return;
+      activeLayers[layerIdx].layerGain.gain.value = gainVal;
+    }
+
+    function applyLayerPan(layerIdx, panVal) {
+      if (!isPlaying || !activeLayers[layerIdx]) return;
+      activeLayers[layerIdx].panner.pan.value = panVal;
+    }
+
+    function applyMasterVol(val) {
+      setVolume(val);
+    }
+
+    // Recreate layer source (noise type change) — replaces only the buffer source
+    function applyLayerSource(layerIdx, sourceType) {
+      if (!isPlaying || !activeLayers[layerIdx]) return;
+      const al = activeLayers[layerIdx];
+      // Stop old source
+      try { al.source.stop(); } catch (_) {}
+      try { al.source.disconnect(); } catch (_) {}
+
+      // Build new layer based on cfgWorkingLayers
+      const ld = cfgWorkingLayers[layerIdx];
+      const newSource = ctx.createBufferSource();
+      newSource.buffer = sharedBuffers[sourceType] || sharedBuffers.brown;
+      newSource.loop = true;
+
+      // Re-chain filters
+      let lastNode = newSource;
+      const filterNodes = [];
+      for (const f of (ld.filters || [])) {
+        const filter = ctx.createBiquadFilter();
+        filter.type = f.type;
+        filter.frequency.value = f.freq;
+        if (f.Q !== undefined) filter.Q.value = f.Q;
+        if (f.gain !== undefined) filter.gain.value = f.gain;
+        lastNode.connect(filter);
+        lastNode = filter;
+        filterNodes.push(filter);
+      }
+      lastNode.connect(al.layerGain);
+      newSource.start();
+      al.source = newSource;
+      al.filterNodes = filterNodes;
+    }
+
+    function applyLayerLowCut(layerIdx, freq) {
+      if (!isPlaying || !activeLayers[layerIdx]) return;
+      const al = activeLayers[layerIdx];
+      // Find or create a highpass filter
+      if (al.filterNodes && al.filterNodes.length > 0) {
+        const hp = al.filterNodes.find(f => f.type === 'highpass');
+        if (hp) { hp.frequency.value = freq; return; }
+      }
+    }
+
+    function applyLayerHighCut(layerIdx, freq) {
+      if (!isPlaying || !activeLayers[layerIdx]) return;
+      const al = activeLayers[layerIdx];
+      if (al.filterNodes && al.filterNodes.length > 0) {
+        const lp = al.filterNodes.find(f => f.type === 'lowpass');
+        if (lp) { lp.frequency.value = freq; return; }
+      }
+    }
+
+    // ─── Render full drawer ───────────────────────────────────
+    function renderCfgDrawer() {
+      cfgBody.innerHTML = '';
+      cfgFooter.innerHTML = '';
+
+      // ── Master volume ──
+      const masterSection = document.createElement('div');
+      masterSection.className = 'cfg-section';
+      const masterLabel = document.createElement('div');
+      masterLabel.className = 'cfg-section-label';
+      masterLabel.textContent = 'Master Volume';
+      masterSection.appendChild(masterLabel);
+
+      masterSection.appendChild(makeSliderRow(
+        '', 0, 100, cfgMasterVol, 1, 'Master volume',
+        (v) => { cfgMasterVol = v; applyMasterVol(v); },
+        (v) => Math.round(v) + '%'
+      ));
+      cfgBody.appendChild(masterSection);
+
+      // Divider
+      const div1 = document.createElement('div');
+      div1.className = 'cfg-divider';
+      cfgBody.appendChild(div1);
+
+      // ── Layers ──
+      const layersWrap = document.createElement('div');
+      layersWrap.className = 'cfg-layers';
+
+      const layersLabel = document.createElement('div');
+      layersLabel.className = 'cfg-layers-label';
+      layersLabel.textContent = 'Layers';
+      layersWrap.appendChild(layersLabel);
+
+      cfgWorkingLayers.forEach((layer, li) => {
+        layersWrap.appendChild(renderLayerRow(li, layer));
+      });
+
+      // Add layer button
+      const addLayerBtn = document.createElement('button');
+      addLayerBtn.className = 'cfg-add-layer-btn';
+      addLayerBtn.type = 'button';
+      addLayerBtn.setAttribute('aria-label', 'Add noise layer');
+      addLayerBtn.innerHTML = '<span aria-hidden="true">+</span> Add layer';
+      addLayerBtn.addEventListener('click', () => {
+        cfgWorkingLayers.push({ source: 'brown', filters: [], gain: 0.4, pan: 0 });
+        cfgDirty = true;
+        if (isPlaying) {
+          // Start new layer immediately
+          activeLayers.push(createLayer(cfgWorkingLayers[cfgWorkingLayers.length - 1]));
+        }
+        renderCfgDrawer();
+      });
+      layersWrap.appendChild(addLayerBtn);
+      cfgBody.appendChild(layersWrap);
+
+      renderCfgFooter();
+    }
+
+    function renderLayerRow(li, layer) {
+      const row = document.createElement('div');
+      row.className = 'cfg-layer-row';
+      row.dataset.layerIndex = li;
+
+      // ── Header ──
+      const header = document.createElement('div');
+      header.className = 'cfg-layer-header';
+      header.setAttribute('aria-expanded', 'false');
+      header.setAttribute('role', 'button');
+      header.setAttribute('tabindex', '0');
+      header.setAttribute('aria-label', 'Layer ' + (li + 1) + ' controls');
+
+      const num = document.createElement('span');
+      num.className = 'cfg-layer-num';
+      num.textContent = 'Layer ' + (li + 1);
+      header.appendChild(num);
+
+      // Volume slider inline in header
+      const volWrap = document.createElement('div');
+      volWrap.className = 'cfg-layer-vol-wrap';
+      const volSlider = document.createElement('input');
+      volSlider.type = 'range';
+      volSlider.className = 'cfg-slider';
+      volSlider.min = 0; volSlider.max = 1; volSlider.step = 0.01;
+      volSlider.value = layer.gain;
+      volSlider.setAttribute('aria-label', 'Layer ' + (li + 1) + ' volume');
+      volSlider.addEventListener('click', e => e.stopPropagation()); // don't expand row
+      volSlider.addEventListener('input', (e) => {
+        e.stopPropagation();
+        const v = parseFloat(e.target.value);
+        cfgWorkingLayers[li].gain = v;
+        cfgDirty = true;
+        applyLayerGain(li, v);
+      });
+      volWrap.appendChild(volSlider);
+      header.appendChild(volWrap);
+
+      const chevron = document.createElement('span');
+      chevron.className = 'cfg-layer-chevron';
+      chevron.setAttribute('aria-hidden', 'true');
+      chevron.textContent = '▾';
+      header.appendChild(chevron);
+
+      // Delete button (only if more than 1 layer)
+      if (cfgWorkingLayers.length > 1) {
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'cfg-layer-delete';
+        deleteBtn.type = 'button';
+        deleteBtn.setAttribute('aria-label', 'Delete layer ' + (li + 1));
+        deleteBtn.textContent = '×';
+        deleteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          // Stop the active layer
+          if (isPlaying && activeLayers[li]) {
+            stopLayer(activeLayers[li]);
+            activeLayers.splice(li, 1);
+          }
+          cfgWorkingLayers.splice(li, 1);
+          cfgDirty = true;
+          renderCfgDrawer();
+        });
+        header.appendChild(deleteBtn);
+      }
+
+      row.appendChild(header);
+
+      // ── Expanded content ──
+      const expanded = document.createElement('div');
+      expanded.className = 'cfg-layer-expanded';
+
+      // Noise type pills
+      const pills = document.createElement('div');
+      pills.className = 'cfg-noise-pills';
+      ['white', 'pink', 'brown'].forEach(type => {
+        const pill = document.createElement('button');
+        pill.className = 'cfg-noise-pill' + (layer.source === type ? ' active' : '');
+        pill.type = 'button';
+        pill.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+        pill.setAttribute('aria-label', type + ' noise');
+        pill.setAttribute('aria-pressed', String(layer.source === type));
+        pill.addEventListener('click', () => {
+          cfgWorkingLayers[li].source = type;
+          cfgDirty = true;
+          applyLayerSource(li, type);
+          // Update pill states
+          pills.querySelectorAll('.cfg-noise-pill').forEach(p => {
+            const active = p.textContent.toLowerCase() === type;
+            p.classList.toggle('active', active);
+            p.setAttribute('aria-pressed', String(active));
+          });
+        });
+        pills.appendChild(pill);
+      });
+      expanded.appendChild(pills);
+
+      // Advanced link
+      const advLink = document.createElement('button');
+      advLink.className = 'cfg-advanced-link';
+      advLink.type = 'button';
+      advLink.textContent = 'Advanced';
+      advLink.addEventListener('click', (e) => {
+        e.stopPropagation();
+        row.classList.toggle('advanced');
+      });
+      expanded.appendChild(advLink);
+
+      // Advanced controls
+      const advControls = document.createElement('div');
+      advControls.className = 'cfg-advanced-controls';
+
+      // Low cut
+      const lowCutVal = layer.filters && layer.filters.find(f => f.type === 'highpass') ? layer.filters.find(f => f.type === 'highpass').freq : 20;
+      advControls.appendChild(makeSliderRow(
+        'Low cut', 20, 2000, lowCutVal, 1, 'Layer ' + (li+1) + ' low frequency cut',
+        (v) => {
+          // Ensure a highpass filter in the layer's filter chain
+          let hpFilter = cfgWorkingLayers[li].filters.find(f => f.type === 'highpass');
+          if (!hpFilter) {
+            hpFilter = { type: 'highpass', freq: v, Q: 0.7 };
+            cfgWorkingLayers[li].filters.push(hpFilter);
+          } else {
+            hpFilter.freq = v;
+          }
+          applyLayerLowCut(li, v);
+        },
+        (v) => Math.round(v) + ' Hz'
+      ));
+
+      // High cut
+      const highCutVal = layer.filters && layer.filters.find(f => f.type === 'lowpass') ? layer.filters.find(f => f.type === 'lowpass').freq : 20000;
+      advControls.appendChild(makeSliderRow(
+        'High cut', 200, 20000, highCutVal, 1, 'Layer ' + (li+1) + ' high frequency cut',
+        (v) => {
+          let lpFilter = cfgWorkingLayers[li].filters.find(f => f.type === 'lowpass');
+          if (!lpFilter) {
+            lpFilter = { type: 'lowpass', freq: v, Q: 0.7 };
+            cfgWorkingLayers[li].filters.push(lpFilter);
+          } else {
+            lpFilter.freq = v;
+          }
+          applyLayerHighCut(li, v);
+        },
+        (v) => Math.round(v) + ' Hz'
+      ));
+
+      // Pan
+      advControls.appendChild(makeSliderRow(
+        'Pan', -1, 1, layer.pan, 0.01, 'Layer ' + (li+1) + ' stereo pan',
+        (v) => {
+          cfgWorkingLayers[li].pan = v;
+          applyLayerPan(li, v);
+        },
+        (v) => {
+          const val = parseFloat(v);
+          if (Math.abs(val) < 0.05) return 'Center';
+          return (val > 0 ? 'R ' : 'L ') + Math.round(Math.abs(val) * 100) + '%';
+        }
+      ));
+
+      expanded.appendChild(advControls);
+      row.appendChild(expanded);
+
+      // Toggle expand on header click/key
+      function toggleExpand(e) {
+        if (e && (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON')) return;
+        row.classList.toggle('expanded');
+        const isExpanded = row.classList.contains('expanded');
+        header.setAttribute('aria-expanded', String(isExpanded));
+      }
+      header.addEventListener('click', toggleExpand);
+      header.addEventListener('keydown', (e) => {
+        if (e.code === 'Enter' || e.code === 'Space') { e.preventDefault(); toggleExpand(); }
+      });
+
+      return row;
+    }
+
+    // ─── Render footer ────────────────────────────────────────
+    function renderCfgFooter() {
+      cfgFooter.innerHTML = '';
+
+      // Discard confirm
+      if (cfgShowDiscard) {
+        const discardBox = document.createElement('div');
+        discardBox.className = 'cfg-discard-confirm';
+        const discardText = document.createElement('p');
+        discardText.className = 'cfg-discard-text';
+        discardText.textContent = 'Discard changes?';
+        discardBox.appendChild(discardText);
+
+        const discardActions = document.createElement('div');
+        discardActions.className = 'cfg-discard-actions';
+
+        const keepBtn = document.createElement('button');
+        keepBtn.className = 'cfg-keep-btn';
+        keepBtn.type = 'button';
+        keepBtn.textContent = 'Keep Editing';
+        keepBtn.addEventListener('click', () => {
+          cfgShowDiscard = false;
+          renderCfgFooter();
+        });
+
+        const discardConfirmBtn = document.createElement('button');
+        discardConfirmBtn.className = 'cfg-discard-btn-confirm';
+        discardConfirmBtn.type = 'button';
+        discardConfirmBtn.textContent = 'Discard';
+        discardConfirmBtn.addEventListener('click', () => {
+          cfgDirty = false;
+          closeDrawer();
+        });
+
+        discardActions.appendChild(keepBtn);
+        discardActions.appendChild(discardConfirmBtn);
+        discardBox.appendChild(discardActions);
+        cfgFooter.appendChild(discardBox);
+        keepBtn.focus();
+        return;
+      }
+
+      // Save row
+      const footerRow = document.createElement('div');
+      footerRow.className = 'cfg-footer-row';
+
+      if (cfgSaveMode) {
+        // Name input
+        const inputWrap = document.createElement('div');
+        inputWrap.className = 'cfg-save-input-wrap';
+        inputWrap.style.flex = '1';
+
+        const inputLabel = document.createElement('div');
+        inputLabel.className = 'cfg-save-input-label';
+        inputLabel.textContent = 'Name your soundscape';
+        inputWrap.appendChild(inputLabel);
+
+        const inputRow = document.createElement('div');
+        inputRow.className = 'cfg-save-input-row';
+
+        const nameInput = document.createElement('input');
+        nameInput.className = 'cfg-name-input';
+        nameInput.type = 'text';
+        nameInput.placeholder = 'My soundscape…';
+        nameInput.maxLength = 40;
+        nameInput.setAttribute('aria-label', 'Soundscape name');
+
+        // Populate if editing existing
+        if (cfgEditingPresetIndex !== null && PRESETS[cfgEditingPresetIndex]) {
+          nameInput.value = PRESETS[cfgEditingPresetIndex].name;
+        }
+
+        const confirmSaveBtn = document.createElement('button');
+        confirmSaveBtn.className = 'cfg-confirm-save-btn';
+        confirmSaveBtn.type = 'button';
+        confirmSaveBtn.textContent = 'Save';
+        confirmSaveBtn.addEventListener('click', () => {
+          const name = nameInput.value.trim() || 'Custom Soundscape';
+          saveCustomPreset(name);
+        });
+
+        nameInput.addEventListener('keydown', (e) => {
+          if (e.code === 'Enter') confirmSaveBtn.click();
+          if (e.code === 'Escape') { cfgSaveMode = false; renderCfgFooter(); }
+        });
+
+        const cancelSaveBtn = document.createElement('button');
+        cancelSaveBtn.className = 'cfg-cancel-save-btn';
+        cancelSaveBtn.type = 'button';
+        cancelSaveBtn.textContent = '✕';
+        cancelSaveBtn.setAttribute('aria-label', 'Cancel save');
+        cancelSaveBtn.addEventListener('click', () => { cfgSaveMode = false; renderCfgFooter(); });
+
+        inputRow.appendChild(nameInput);
+        inputRow.appendChild(confirmSaveBtn);
+        inputRow.appendChild(cancelSaveBtn);
+        inputWrap.appendChild(inputRow);
+        footerRow.appendChild(inputWrap);
+        cfgFooter.appendChild(footerRow);
+        setTimeout(() => nameInput.focus(), 50);
+      } else {
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'cfg-save-preset-btn';
+        saveBtn.type = 'button';
+        saveBtn.textContent = cfgEditingPresetIndex !== null ? 'Update preset' : 'Save as preset';
+        saveBtn.addEventListener('click', () => {
+          if (cfgEditingPresetIndex !== null) {
+            // Direct update with same name
+            saveCustomPreset(PRESETS[cfgEditingPresetIndex].name);
+          } else {
+            cfgSaveMode = true;
+            renderCfgFooter();
+          }
+        });
+        footerRow.appendChild(saveBtn);
+        cfgFooter.appendChild(footerRow);
+      }
+    }
+
+    // ─── Save custom preset ───────────────────────────────────
+    function saveCustomPreset(name) {
+      const customs = loadCustomPresets();
+
+      const preset = {
+        name: name,
+        desc: '',
+        slug: 'custom-' + Date.now(),
+        param: 'c-' + Date.now(),
+        glowColor: '200, 169, 110',
+        custom: true,
+        layers: cfgWorkingLayers.map(cloneLayer),
+      };
+
+      if (cfgEditingPresetIndex !== null) {
+        // Replace existing
+        const existingParam = PRESETS[cfgEditingPresetIndex].param;
+        const existingIdx = customs.findIndex(c => c.param === existingParam);
+        preset.param = existingParam; // keep same param
+        preset.slug = PRESETS[cfgEditingPresetIndex].slug;
+        if (existingIdx >= 0) {
+          customs[existingIdx] = preset;
+        } else {
+          customs.push(preset);
+        }
+
+        // Update in PRESETS array
+        PRESETS[cfgEditingPresetIndex] = preset;
+      } else {
+        customs.push(preset);
+        PRESETS.push(preset);
+      }
+
+      saveCustomPresets(customs);
+      cfgDirty = false;
+
+      // Rebuild buttons
+      const wasIndex = cfgEditingPresetIndex !== null ? cfgEditingPresetIndex : PRESETS.length - 1;
+      buildPresetButtons();
+      syncPresetButtons(currentPresetIndex);
+
+      // If currently playing this preset, crossfade to updated version
+      if (isPlaying && cfgEditingPresetIndex === currentPresetIndex) {
+        crossfadeToPreset();
+      }
+
+      closeDrawer();
+      // Briefly highlight the saved chip
+      setTimeout(() => {
+        const allChips = document.querySelectorAll('.preset-btn[data-preset-index]');
+        allChips.forEach(btn => {
+          if (parseInt(btn.dataset.presetIndex, 10) === wasIndex) {
+            btn.style.transition = 'box-shadow 300ms ease';
+            btn.style.boxShadow = '0 0 0 2px var(--color-accent)';
+            setTimeout(() => { btn.style.boxShadow = ''; }, 1200);
+          }
+        });
+      }, 100);
+    }
+
+    // ─── Context menu (custom presets) ────────────────────────
+    function showContextMenu(anchorEl, presetIndex) {
+      contextMenuOpen = true;
+      contextMenuTargetIndex = presetIndex;
+
+      const rect = anchorEl.getBoundingClientRect();
+      cfgContextMenu.style.top = (rect.bottom + 8) + 'px';
+      cfgContextMenu.style.left = rect.left + 'px';
+      cfgContextMenu.classList.add('open');
+
+      // Adjust if off-screen
+      requestAnimationFrame(() => {
+        const menuRect = cfgContextMenu.getBoundingClientRect();
+        if (menuRect.right > window.innerWidth - 8) {
+          cfgContextMenu.style.left = (window.innerWidth - menuRect.width - 8) + 'px';
+        }
+        if (menuRect.bottom > window.innerHeight - 8) {
+          cfgContextMenu.style.top = (rect.top - menuRect.height - 8) + 'px';
+        }
+      });
+
+      cfgContextEdit.focus();
+    }
+
+    function hideContextMenu() {
+      contextMenuOpen = false;
+      cfgContextMenu.classList.remove('open');
+    }
+
+    cfgContextEdit.addEventListener('click', () => {
+      const idx = contextMenuTargetIndex;
+      hideContextMenu();
+      openConfigurator(idx);
+    });
+
+    cfgContextDelete.addEventListener('click', () => {
+      const idx = contextMenuTargetIndex;
+      hideContextMenu();
+      deleteCustomPreset(idx);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (contextMenuOpen && !cfgContextMenu.contains(e.target)) {
+        hideContextMenu();
+      }
+    });
+
+    cfgContextMenu.addEventListener('keydown', (e) => {
+      if (e.code === 'Escape') hideContextMenu();
+    });
+
+    function deleteCustomPreset(idx) {
+      const preset = PRESETS[idx];
+      if (!preset || !preset.custom) return;
+
+      // Remove from localStorage
+      const customs = loadCustomPresets().filter(c => c.param !== preset.param);
+      saveCustomPresets(customs);
+
+      // Remove from PRESETS array
+      PRESETS.splice(idx, 1);
+
+      // If this was the active preset, switch to first
+      if (currentPresetIndex >= PRESETS.length) {
+        currentPresetIndex = 0;
+      } else if (currentPresetIndex === idx) {
+        currentPresetIndex = 0;
+        if (isPlaying) {
+          updateGlowColor(PRESETS[0].glowColor);
+          crossfadeToPreset();
+        }
+        transitionPresetName(PRESETS[0].name);
+      }
+
+      buildPresetButtons();
+      syncPresetButtons(currentPresetIndex);
+    }
+
     // ─── Init from URL ────────────────────────────────────────
     (function init() {
+      // Load custom presets first
+      mergeCustomPresets();
+
       const params = new URLSearchParams(window.location.search);
       const shortParam = params.get('p');
       const legacySlug = params.get('preset');
@@ -920,20 +2417,20 @@
         idx = PRESETS.findIndex(preset => preset.slug === legacySlug);
       }
 
-      if (idx >= 0) {
+      if (idx >= 0 && !PRESETS[idx].custom) {
         currentPresetIndex = idx;
-        syncPresetButtons(idx);
-        presetNameEl.textContent = PRESETS[idx].name;
         if (shortParam !== PRESETS[idx].param || legacySlug) {
           updatePresetUrl(idx);
         }
+      } else if (idx >= 0) {
+        currentPresetIndex = idx;
       } else {
         shouldNormalizeUrl = false;
       }
 
-      if (!shouldNormalizeUrl) {
-        syncPresetButtons(currentPresetIndex);
-      }
+      buildPresetButtons();
+      syncPresetButtons(currentPresetIndex);
+      presetNameEl.textContent = PRESETS[currentPresetIndex].name;
 
       const volParam = params.get('v');
       const initVol = volParam !== null ? Math.max(0, Math.min(100, parseInt(volParam, 10))) : 50;
