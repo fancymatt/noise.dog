@@ -1544,11 +1544,43 @@
         startPreset();
         showGlow();
         presetNameEl.classList.add('playing');
+        onAudioStart();
       } else {
         stopPreset();
         hideGlow();
         presetNameEl.classList.remove('playing');
+        onAudioStop();
       }
+    }
+
+    // ─── Analytics event tracking ─────────────────────────────
+    let _audioStartFired = false;
+    let _engagedFired    = false;
+    let _engagedTimer    = null;
+
+    function gcTrack(path) {
+      if (window.goatcounter && window.goatcounter.count) {
+        window.goatcounter.count({ path, event: true });
+      }
+    }
+
+    function onAudioStart() {
+      if (!_audioStartFired) {
+        _audioStartFired = true;
+        gcTrack('audio_start');
+      }
+      if (!_engagedFired) {
+        clearTimeout(_engagedTimer);
+        _engagedTimer = setTimeout(() => {
+          _engagedFired = true;
+          gcTrack('engaged_10min');
+        }, 10 * 60 * 1000);
+      }
+    }
+
+    function onAudioStop() {
+      clearTimeout(_engagedTimer);
+      _engagedTimer = null;
     }
 
     // ─── Preset name transition ───────────────────────────────
