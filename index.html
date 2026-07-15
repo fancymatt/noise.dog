@@ -335,14 +335,14 @@
         to right,
         var(--color-accent) 0%,
         var(--color-accent) var(--vol-pct),
-        #2a2420 var(--vol-pct),
-        #2a2420 100%
+        var(--color-surface) var(--vol-pct),
+        var(--color-surface) 100%
       );
     }
     .volume-slider::-moz-range-track {
       height: 3px;
       border-radius: 2px;
-      background: #2a2420;
+      background: var(--color-surface);
     }
     .volume-slider::-moz-range-progress {
       height: 3px;
