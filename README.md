@@ -17,7 +17,7 @@ This is a static site — one `index.html` + `images/`. No build step.
 
 **Local dev setup:**
 ```bash
-git clone git@github.com:fancymatt/noise.dog.git
+git clone git@github.com:beardbird/noise-dog.git
 cd noise.dog
 # Open index.html in a browser — no server required for basic dev.
 # For AudioContext to work, serve locally:
